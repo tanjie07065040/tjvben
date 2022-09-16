@@ -33,9 +33,11 @@
     <div>
       <BasicModal @register="registerUserModal" :title="TitleContent" v-bind="$attrs" @ok="handleSubmit">
         <BasicForm @register="registerUserForm">
-          <!-- <template #sys="{ model, field }">
-            <a-select :options=SexOptions mode="single" v-model:value="model[field]" allowClear />
-          </template> -->
+          <template #user="{ model, field }">
+            <div>
+              <a-select :options=SexOptions v-model:value="model[field]" allowClear />
+            </div>
+          </template>
         </BasicForm>
       </BasicModal>
     </div>
@@ -78,7 +80,7 @@ export default defineComponent({
     }
 
     const TitleContent = ref('');
-    const SexOptions: any = ref(['男', '女', '其他']);
+    const SexOptions: any = ref([]);
 
     const [registerUserModal, { setModalProps, closeModal: closeUserModal, openModal: openUserModal }] = useModal();
 
@@ -129,7 +131,7 @@ export default defineComponent({
       // 打开模态框
       openUserModal();
       // 属性重置
-      resetFields();
+      // resetFields();
       TitleContent.value = '新增'
 
     }
@@ -159,6 +161,20 @@ export default defineComponent({
     // 初始化加载数据
     onMounted(() => {
       loadOrgData();
+      SexOptions.value = [
+        {
+          label: '男',
+          value: 'man'
+        },
+        {
+          label: '女',
+          value: 'women'
+        },
+        {
+          label: '其他',
+          value: 'other'
+        },
+      ]
     })
 
     onUnmounted(() => {

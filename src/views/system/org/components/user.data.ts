@@ -43,7 +43,8 @@ export const UserFormSchema: FormSchema[] = [
   {
     field: 'sex',
     label: '性别',
-    component: 'Input',
+    component: 'Select',
     required: true,
+    slot: 'user',
   },
 ];

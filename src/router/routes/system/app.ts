@@ -25,6 +25,26 @@ const app: AppRouteModule = {
         hideMenu: false,
       },
     },
+    {
+      path: 'role',
+      name: 'Role',
+      component: () => import('/@/views/system/role/index.vue'),
+      meta: {
+        title: t('system.menu.role'),
+        icon: 'ion:grid-outline',
+        hideMenu: false,
+      },
+    },
+    {
+      path: 'menu',
+      name: 'Menu',
+      component: () => import('/@/views/system/menu/index.vue'),
+      meta: {
+        title: t('system.menu.menu'),
+        icon: 'ion:grid-outline',
+        hideMenu: false,
+      },
+    },
   ],
 };
 

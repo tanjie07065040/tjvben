@@ -49,7 +49,7 @@ export const useAppStore = defineStore({
 
     getProjectConfig(): ProjectConfig {
       // 设置配置信息 谭杰
-      this.projectConfig.showFooter = true;
+      this.projectConfig.showFooter = false;
       return this.projectConfig || ({} as ProjectConfig);
     },
 

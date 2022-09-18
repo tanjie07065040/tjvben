@@ -53,6 +53,7 @@ import { cloneDeep } from 'lodash-es';
 
 import { treeData } from './org.data';
 import { UserColumns, UserFormSchema, UserSearch } from './user.data';
+
 export default defineComponent({
   name: 'orgManager',
   components: { BasicModal, BasicForm, BasicTree, BasicTable, TableAction },
@@ -81,6 +82,7 @@ export default defineComponent({
 
     const TitleContent = ref('');
     const SexOptions: any = ref([]);
+    const userDataList: any = [];
 
     const [registerUserModal, { setModalProps, closeModal: closeUserModal, openModal: openUserModal }] = useModal();
 
@@ -91,15 +93,19 @@ export default defineComponent({
       showActionButtonGroup: false,
     });
     // 用户table初始化
-    const [registerTable, { reload, getRawDataSource }] = useTable({
+    const [registerTable, { reload, getRawDataSource, insertTableDataRecord, updateTableDataRecord, deleteTableDataRecord }] = useTable({
       title: '账号列表',
       // 获取数据API信息
       // api: getUserDataMethod,
-      rowKey: 'id',
+      rowKey: 'name',
       // 显示列配置
       columns: UserColumns,
+      dataSource: userDataList,
+      showSummary: true,
       useSearchForm: true,
-      showTableSetting: false,
+      pagination: true,
+      showIndexColumn: true,
+      showTableSetting: true,
       // 查询条件配置
       formConfig: {
         labelWidth: 80,
@@ -116,8 +122,10 @@ export default defineComponent({
         width: 200,
         title: '操作',
         dataIndex: 'action',
-        // slots: { customRender: 'action' },
+        // 操作列开启
+        slots: { customRender: 'action' },
       },
+
     })
 
     const searchInfo = reactive<Recordable>({});
@@ -146,21 +154,30 @@ export default defineComponent({
 
     function removeUserData(record) {
       console.log(record);
+      deleteTableDataRecord(record.name)
     }
 
     async function handleSubmit() {
 
       const values = await validate();
       console.log(values);
+      if (TitleContent.value === '新增') {
+        insertTableDataRecord(values);
+      } else if (TitleContent.value === '编辑') {
+        updateTableDataRecord(values.name, values);
+      }
       // 关闭模态框
       closeUserModal();
 
       setModalProps({ confirmLoading: false });
+      reload();
     }
 
     // 初始化加载数据
     onMounted(() => {
       loadOrgData();
+
+
       SexOptions.value = [
         {
           label: '男',
@@ -175,6 +192,12 @@ export default defineComponent({
           value: 'other'
         },
       ]
+      for (let index = 0; index < 40; index++) {
+        userDataList.push({
+          name: `${index} John Brown`,
+          sex: SexOptions.value[index % SexOptions.value.length].value,
+        });
+      }
     })
 
     onUnmounted(() => {
@@ -197,6 +220,7 @@ export default defineComponent({
       handleSubmit,
       SexOptions,
       TitleContent,
+      userDataList,
     }
   },
 
@@ -206,7 +230,7 @@ export default defineComponent({
 <style lang="less" scoped>
 .system_org {
   width: calc(100% - 0px);
-  height: 100px;
+  max-height: 800px;
 
   .system_org_left {
     float: left;
@@ -220,7 +244,7 @@ export default defineComponent({
   .system_org_right {
     float: right;
     width: 64%;
-    height: 100%;
+    height: 850px;
   }
 }
 </style>

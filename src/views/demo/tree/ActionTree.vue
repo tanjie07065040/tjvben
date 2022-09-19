@@ -62,7 +62,7 @@
       }
 
       function handleSetSelectData() {
-        getTree().setSelectedKeys(['0-0']);
+        getTree().setSelectedKeys(['0-0-1']);
       }
 
       function handleGetSelectData() {

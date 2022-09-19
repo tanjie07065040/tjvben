@@ -1,66 +1,143 @@
 <template>
   <div class="system_org">
     <div class="system_org_left">
-      <BasicTree ref="loadTreeRef" title="组织机构" :treeData="treeDataList" :checkable="true" :loading="treeLoading"
-        @check="handleCheck" />
-      <!--自定义属性title和key :fieldNames="{ title: 'displayName', key: 'id' }" -->
+      <BasicTree ref="orgTreeRef" title="组织机构" helpMessage="组织机构" :treeData="treeDataList" :checkable="true"
+        :loading="treeLoading" :toolbar="true" :search="true" :renderIcon="createIcon" :selectedKeys="selectedKeys"
+        :actionList="OrgActionList" :fieldNames="{ title: 'orgname', key: 'id' }" @select="handleSelect"
+        @check="handleCheck">
+      </BasicTree>
+      <!--自定义属性title和key " -->
     </div>
+    <orgModal @register="registerOrgModel" @success="orghandleSuccess"></orgModal>
     <div class="system_org_right">
-      <BasicTable @register="registerTable" :searchInfo="searchInfo">
-        <template #toolbar>
-          <a-button type="primary" @click="addUserData()">新增用户</a-button>
-        </template>
-        <template #action="{ record }">
-          <TableAction :actions="[
-            {
-              icon: 'clarity:note-edit-line',
-              tooltip: '编辑',
-              onClick: updateUserData.bind(null, record),
-            },
-            {
-              icon: 'ant-design:delete-outlined',
-              tooltip: '删除',
-              color: 'error',
-              popConfirm: {
-                title: '是否确认删除',
-                confirm: removeUserData.bind(null, record),
-              },
-            },
-          ]" />
-        </template>
-      </BasicTable>
+      <user></user>
     </div>
-    <div>
-      <BasicModal @register="registerUserModal" :title="TitleContent" v-bind="$attrs" @ok="handleSubmit">
-        <BasicForm @register="registerUserForm">
-          <template #user="{ model, field }">
-            <div>
-              <a-select :options=SexOptions v-model:value="model[field]" allowClear />
-            </div>
-          </template>
-        </BasicForm>
-      </BasicModal>
-    </div>
+
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted, reactive, ref } from 'vue';
-import { BasicModal, useModal } from '/@/components/Modal';
-import { BasicForm, useForm } from '/@/components/Form/index';
-import { BasicTree, TreeActionType, TreeItem } from '/@/components/Tree';
-import { BasicTable, useTable, TableAction } from '/@/components/Table';
+import { defineComponent, h, onMounted, onUnmounted, ref, unref, toRaw } from 'vue';
+import { BasicTree, TreeActionItem, TreeActionType, TreeItem } from '/@/components/Tree';
 import { cloneDeep } from 'lodash-es';
 
-import { treeData } from './org.data';
-import { UserColumns, UserFormSchema, UserSearch } from './user.data';
+import { orgFormSchema, treeData } from './org.data';
+import user from './user.vue';
+import orgModal from './orgmodel.vue';
+import { BasicModal, useModal } from '/@/components/Modal';
+import { BasicForm, useForm } from '/@/components/Form/index';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons-vue';
+import { useMessage } from '/@/hooks/web/useMessage';
 
 export default defineComponent({
   name: 'orgManager',
-  components: { BasicModal, BasicForm, BasicTree, BasicTable, TableAction },
-  setup() {
-    const loadTreeRef = ref<Nullable<TreeActionType>>(null);
+  components: { BasicModal, BasicForm, BasicTree, user, orgModal },
+  setup(_, { emit }) {
+
+    // 消息提示组件
+    const { createMessage } = useMessage();
+
+    const orgTreeRef = ref<Nullable<TreeActionType>>(null);
     const treeDataList = ref<TreeItem[]>([]);
     const treeLoading = ref(false);
+    const OrgTitle = ref('');
+    const currentNode = ref();
+    const selectedKeys = ref<string[]>([]);
+
+    function getTree() {
+      const tree = unref(orgTreeRef);
+      if (!tree) {
+        throw new Error('tree is null!');
+      }
+      return tree;
+    }
+
+    const [registerOrgForm, { resetFields, }] = useForm({
+      labelWidth: 100,
+      schemas: orgFormSchema,
+      // 弹出表单是否显示ActionButton
+      showActionButtonGroup: false,
+    })
+
+    const [registerOrgModel, { openModal: openOrgModal }] = useModal();
+
+    function createIcon({ level }) {
+      if (level === 1) {
+        return 'ion:git-compare-outline';
+      }
+      if (level === 2) {
+        return 'ion:home';
+      }
+      if (level === 3) {
+        return 'ion:airplane';
+      }
+      return '';
+    }
+
+    const OrgActionList: TreeActionItem[] = [
+      {
+        render: (node) => {
+          return h(PlusOutlined, {
+            class: 'ml-2',
+            onClick: () => {
+              handlePlusOrg(node);
+            },
+          });
+        },
+      },
+      {
+        render: (node) => {
+          return h(EditOutlined, {
+            class: 'ml-2',
+            onClick: () => {
+              //  编辑时候要拿到选中对象属性内容到模态框
+              // setFieldsValue({ ...node });
+
+              handleEditOrg(node);
+
+            },
+          });
+        },
+        show: () => true,
+
+      },
+      {
+        render: (node) => {
+          return h(DeleteOutlined, {
+            class: 'ml-2',
+            onClick: () => {
+              DeleteOrgNodeMethod(node.id);
+            },
+          });
+        },
+      },
+    ]
+    // 组织机构数节点选中事件
+    function handleSelect(keys, info) {
+      getTree().setCheckedKeys([keys[0]]);
+      currentNode.value = { orgname: info.selectedNodes[0].orgname, id: info.selectedNodes[0].id };
+      emit('select', keys[0]);
+    }
+
+    function handlePlusOrg(node: any) {
+      resetFields();
+      openOrgModal(true, {
+        isUpdate: false,
+        currentNodeKey: node.id,
+      });
+    }
+
+    function handleEditOrg(node: any) {
+      console.log(node);
+      getTree().setSelectedKeys([node.id.toString()]);
+      const result = getTree().getSelectedNode(node.id);
+      const currentValue = toRaw(node);
+      openOrgModal(true, {
+        isUpdate: true,
+        currentNodeKey: node.id,
+        node
+      });
+    }
+
 
     // 加载组织机构数据
     function loadOrgData() {
@@ -75,152 +152,78 @@ export default defineComponent({
 
     // 组织机构CheckBox选择
     function handleCheck(checkedKeys, e) {
-      console.log('onChecked', checkedKeys, e);
-      // 选择组织机构后重新加载用户数据
-      reload();
-    }
-
-    const TitleContent = ref('');
-    const SexOptions: any = ref([]);
-    const userDataList: any = [];
-
-    const [registerUserModal, { setModalProps, closeModal: closeUserModal, openModal: openUserModal }] = useModal();
-
-
-    const [registerUserForm, { resetFields, validate, setFieldsValue }] = useForm({
-      labelWidth: 100,
-      schemas: UserFormSchema,
-      showActionButtonGroup: false,
-    });
-    // 用户table初始化
-    const [registerTable, { reload, getRawDataSource, insertTableDataRecord, updateTableDataRecord, deleteTableDataRecord }] = useTable({
-      title: '账号列表',
-      // 获取数据API信息
-      // api: getUserDataMethod,
-      rowKey: 'name',
-      // 显示列配置
-      columns: UserColumns,
-      dataSource: userDataList,
-      showSummary: true,
-      useSearchForm: true,
-      pagination: true,
-      showIndexColumn: true,
-      showTableSetting: true,
-      // 查询条件配置
-      formConfig: {
-        labelWidth: 80,
-        schemas: UserSearch
-      },
-      bordered: true,
-      fetchSetting: {
-        pageField: 'pageIndex',
-        sizeField: 'pageSize',
-        listField: 'records',
-        totalField: 'totalElements',
-      },
-      actionColumn: {
-        width: 200,
-        title: '操作',
-        dataIndex: 'action',
-        // 操作列开启
-        slots: { customRender: 'action' },
-      },
-
-    })
-
-    const searchInfo = reactive<Recordable>({});
-
-    function initUserData() {
-      const data = getRawDataSource();
-      console.log(data);
-    }
-
-    function addUserData() {
-      // 打开模态框
-      openUserModal();
-      // 属性重置
-      // resetFields();
-      TitleContent.value = '新增'
-
-    }
-
-    function updateUserData(record) {
-      openUserModal();
-      resetFields();
-      setFieldsValue({ ...record });
-      TitleContent.value = '编辑'
-      console.log(record);
-    }
-
-    function removeUserData(record) {
-      console.log(record);
-      deleteTableDataRecord(record.name)
-    }
-
-    async function handleSubmit() {
-
-      const values = await validate();
-      console.log(values);
-      if (TitleContent.value === '新增') {
-        insertTableDataRecord(values);
-      } else if (TitleContent.value === '编辑') {
-        updateTableDataRecord(values.name, values);
+      if (checkedKeys === undefined) {
+        return;
       }
-      // 关闭模态框
-      closeUserModal();
-
-      setModalProps({ confirmLoading: false });
-      reload();
+      getTree().setSelectedKeys([checkedKeys[0]]);
+      // 选择组织机构后操作完后重新加载用户数据
+      // loadOrgData();
     }
+
+    // 组织机构操作事件方法
+    async function orghandleSuccess(data: any) {
+      if (!unref(data.isUpdate)) {
+        addOrgNodeMethod(data.parentKey.value, data.values);
+      } else {
+        EditOrgNodeMethod(data.parentKey.value, data.values);
+      }
+      createMessage.success('operation success');
+    }
+
+    function addOrgNodeMethod(parentKey: string, values: any) {
+      getTree().insertNodeByKey({
+        parentKey: parentKey,
+        node: {
+          orgname: values.orgname,
+          id: values.id
+        },
+        // 往后插入
+        push: 'push',
+        // 往前插入
+        // push:'unshift',
+      })
+    }
+
+    function EditOrgNodeMethod(currentKey: string, values: any) {
+      getTree().updateNodeByKey(currentKey, {
+        orgname: values.orgname
+      })
+    }
+
+    function DeleteOrgNodeMethod(currentKey: string) {
+      getTree().deleteNodeByKey(currentKey)
+    }
+
 
     // 初始化加载数据
     onMounted(() => {
+      OrgTitle.value = '组织机构';
       loadOrgData();
-
-
-      SexOptions.value = [
-        {
-          label: '男',
-          value: 'man'
-        },
-        {
-          label: '女',
-          value: 'women'
-        },
-        {
-          label: '其他',
-          value: 'other'
-        },
-      ]
-      for (let index = 0; index < 40; index++) {
-        userDataList.push({
-          name: `${index} John Brown`,
-          sex: SexOptions.value[index % SexOptions.value.length].value,
-        });
-      }
     })
 
+    // 页面释放
     onUnmounted(() => {
       treeDataList.value = [];
     })
+
+
     return {
-      loadTreeRef,
+      createMessage,
+      orgTreeRef,
       treeDataList,
       treeLoading,
+      OrgTitle,
+      selectedKeys,
+      OrgActionList,
+      currentNode,
+      registerOrgModel,
+      registerOrgForm,
+      orghandleSuccess,
       loadOrgData,
       handleCheck,
-      registerTable,
-      addUserData,
-      updateUserData,
-      removeUserData,
-      searchInfo,
-      initUserData,
-      registerUserForm,
-      registerUserModal,
-      handleSubmit,
-      SexOptions,
-      TitleContent,
-      userDataList,
+      handleSelect,
+      createIcon,
+      addOrgNodeMethod
     }
   },
 
@@ -238,7 +241,6 @@ export default defineComponent({
     margin-top: 17px;
     width: 35%;
     height: 100%;
-    background-color: red;
   }
 
   .system_org_right {

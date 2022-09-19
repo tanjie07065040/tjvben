@@ -89,11 +89,7 @@ export default defineComponent({
           return h(EditOutlined, {
             class: 'ml-2',
             onClick: () => {
-              //  编辑时候要拿到选中对象属性内容到模态框
-              // setFieldsValue({ ...node });
-
               handleEditOrg(node);
-
             },
           });
         },
@@ -127,10 +123,7 @@ export default defineComponent({
     }
 
     function handleEditOrg(node: any) {
-      console.log(node);
-      getTree().setSelectedKeys([node.id.toString()]);
-      const result = getTree().getSelectedNode(node.id);
-      const currentValue = toRaw(node);
+      // 当前的node对象中拿不到树的title属性
       openOrgModal(true, {
         isUpdate: true,
         currentNodeKey: node.id,

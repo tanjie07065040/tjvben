@@ -11,6 +11,16 @@ export const RoleColumns: BasicColumn[] =
       ifShow: false,
     },
     {
+      title: '应用编号',
+      dataIndex: 'appid',
+      ifShow: false,
+    },
+    {
+      title: '应用名称',
+      dataIndex: 'appname',
+      ifShow: false,
+    },
+    {
       title: '角色名称',
       dataIndex: 'rolename',
       width: 120,

@@ -1,6 +1,5 @@
 <template>
-
-  <BasicTable @register="registerTable" :loading="loading">
+  <BasicTable @register="registerTable" ref="tableRef">
     <template #expandedRowRender="{ record }">
       <a-row :span="16">
         <a-col :span="6">
@@ -14,23 +13,35 @@
   </BasicTable>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted, ref } from 'vue';
+import { defineComponent, onMounted, onUnmounted, ref, unref } from 'vue';
 
-import { BasicTable, useTable, } from '/@/components/Table';
+import { BasicTable, TableActionType, useTable, } from '/@/components/Table';
 
 import { LogColumns, LogSearch } from './log.data';
 import { formatToDateTime } from '/@/utils/dateUtil';
 import { buildUUID } from '/@/utils/uuid';
 import { LogModel } from '/@/api/system/model/logModel';
 
-
 export default defineComponent({
   name: 'logManager',
   components: { BasicTable },
   setup() {
     let logDataList: LogModel[] = [];
-    const loading = ref(false);
 
+    function getTableAction() {
+      const tableRef = ref<Nullable<TableActionType>>(null);
+      const tableAction = unref(tableRef);
+      if (!tableAction) {
+        throw new Error('tableAction is null');
+      }
+      return tableAction;
+    }
+    function changeLoading() {
+      getTableAction().setLoading(true);
+      setTimeout(() => {
+        getTableAction().setLoading(false);
+      }, 1000);
+    }
     // 用户table初始化
     const [registerTable, { setTableData }] = useTable({
       title: '日志列表',
@@ -86,7 +97,6 @@ export default defineComponent({
 
     // 初始化加载数据
     onMounted(() => {
-      loading.value = true;
       for (let index = 0; index < 25; index++) {
         logDataList.push({
           id: buildUUID(),
@@ -100,7 +110,6 @@ export default defineComponent({
           content: '获取日志信息',
         });
       }
-      loading.value = false;
     })
     // 页面释放
     onUnmounted(() => {
@@ -110,7 +119,7 @@ export default defineComponent({
     return {
       registerTable,
       logDataList,
-      loading,
+      changeLoading
     }
   },
 

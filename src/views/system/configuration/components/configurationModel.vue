@@ -1,6 +1,6 @@
 <template>
   <div>
-    <BasicModal class="model-center-btn" v-bind="$attrs" @register="registerOrgModel" :title="OrgTitle"
+    <BasicModal class="model-center-btn" v-bind="$attrs" @register="registerConfigurationModel" :title="OrgTitle"
       @ok="orghandleSubmit">
       <BasicForm @register="registerOrgForm">
       </BasicForm>
@@ -11,12 +11,12 @@
 import { computed, defineComponent, onMounted, onUnmounted, ref, unref } from 'vue';
 
 
-import { orgFormSchema } from './org.data';
+import { ConfigurationFormSchema } from './configuration.data';
 import { BasicModal, useModalInner } from '/@/components/Modal';
 import { BasicForm, useForm } from '/@/components/Form/index';
 
 export default defineComponent({
-  name: 'orgOperationManager',
+  name: 'configurationManagerModel',
   components: { BasicModal, BasicForm },
 
   setup(_, { emit }) {
@@ -26,12 +26,12 @@ export default defineComponent({
 
     const [registerOrgForm, { resetFields, setFieldsValue, validate }] = useForm({
       labelWidth: 100,
-      schemas: orgFormSchema,
+      schemas: ConfigurationFormSchema,
       // 弹出表单是否显示ActionButton
       showActionButtonGroup: false,
     })
 
-    const [registerOrgModel, { setModalProps, closeModal }] = useModalInner((data) => {
+    const [registerConfigurationModel, { setModalProps, closeModal }] = useModalInner((data) => {
       resetFields();
       setModalProps({ confirmLoading: false });
       isUpdate.value = !!data?.isUpdate;
@@ -72,7 +72,7 @@ export default defineComponent({
 
 
     return {
-      registerOrgModel,
+      registerConfigurationModel,
       registerOrgForm,
       orghandleSubmit,
       OrgTitle,

@@ -1,7 +1,7 @@
 <template>
   <div class="role">
     <div class="roleleft">
-      <BasicTable @register="registerTable">
+      <BasicTable @register="registerTable" @row-click="appRowClick">
       </BasicTable>
     </div>
     <div class="roleright">
@@ -81,6 +81,12 @@ export default defineComponent({
         totalField: 'totalElements',
       },
     })
+
+    // 应用行点击事件 然后获取对应的角色
+    function appRowClick(record: Recordable) {
+      console.log(record);
+      // TODO 获取角色数据
+    }
 
     let roleDataList: RoleModel[] = []
 
@@ -188,7 +194,8 @@ export default defineComponent({
       removeRoleData,
       handleOpen,
       handlersuccess,
-      registerModal
+      registerModal,
+      appRowClick
     }
   }
 })

@@ -18,13 +18,13 @@ export const UserSearch: FormSchema[] = [
     field: 'name',
     label: '姓名',
     component: 'Input',
-    colProps: { span: 8 },
+    colProps: { span: 6 },
   },
   {
     field: 'sex',
     label: '性别',
     component: 'Input',
-    colProps: { span: 8 },
+    colProps: { span: 6 },
   },
 ]
 

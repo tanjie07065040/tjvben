@@ -1,15 +1,15 @@
 <template>
-  <div >
+  <PageWrapper dense contentFullHeight fixedHeight contentClass="flex">
     <log></log>
-  </div>
+  </PageWrapper>
 </template>
 <script lang="ts" setup>
-  import { ref } from 'vue';
-  import log from './components/log.vue';
+import { ref } from 'vue';
+import log from './components/log.vue';
+import { PageWrapper } from '/@/components/Page';
+const loading = ref(true);
 
-  const loading = ref(true);
-
-  setTimeout(() => {
-    loading.value = false;
-  }, 1500);
+setTimeout(() => {
+  loading.value = false;
+}, 1500);
 </script>

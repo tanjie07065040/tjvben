@@ -2,45 +2,52 @@ import { FormSchema } from "/@/components/Form";
 
 export const treeData: any[] = [
   {
-    orgname: 'parent 0',
-    id: '0-0',
+    orgname: '组织机构树',
+    id: '100100',
 
     children: [
-      { orgname: 'leaf', id: '0-0-0' },
       {
-        orgname: 'leaf',
-        id: '0-0-1',
+        orgname: '研发部',
+        id: '100110',
 
         children: [
+          { orgname: '研发一部', id: '100111' },
           {
-            orgname: 'leaf',
+            orgname: '研发二部',
+            id: '100112',
 
-            id: '0-0-0-0',
-            children: [{ orgname: 'leaf', id: '0-0-0-0-1' }],
+            children: [
+              {
+                orgname: '研发二部队伍一',
+
+                id: '1001121',
+                children: [{ orgname: '研发二部小组', id: '10011211' }],
+              },
+              { orgname: '研发二部队伍二', id: '1001122' },
+            ],
           },
-          { orgname: 'leaf', id: '0-0-0-1' },
         ],
       },
-    ],
-  },
-  {
-    orgname: 'parent 2',
-    id: '1-1',
+      {
+        orgname: '测试部',
+        id: '100210',
 
-    children: [
-      { orgname: 'leaf', id: '1-1-0' },
-      { orgname: 'leaf', id: '1-1-1' },
-    ],
-  },
-  {
-    orgname: 'parent 3',
-    id: '2-2',
+        children: [
+          { orgname: '测试一部', id: '100211' },
+          { orgname: '测试二部', id: '100212' },
+        ],
+      },
+      {
+        orgname: '市场部',
+        id: '100310',
 
-    children: [
-      { orgname: 'leaf', id: '2-2-0' },
-      { orgname: 'leaf', id: '2-2-1' },
-    ],
-  },
+        children: [
+          { orgname: '市场一部', id: '100311' },
+          { orgname: '市场二部', id: '100312' },
+        ],
+      },
+    ]
+  }
 ];
 
 export const orgFormSchema: FormSchema[] = [

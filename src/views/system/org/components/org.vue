@@ -3,8 +3,8 @@
     <div class="system_org_left">
       <BasicTree ref="orgTreeRef" title="组织机构" helpMessage="组织机构" :treeData="treeDataList" :checkable="true"
         :loading="treeLoading" :toolbar="true" :search="true" :renderIcon="createIcon" :selectedKeys="selectedKeys"
-        :actionList="OrgActionList" :fieldNames="{ title: 'orgname', key: 'id' }" @select="handleSelect"
-        @check="handleCheck">
+        :actionList="OrgActionList" :defaultExpandLevel="1" :fieldNames="{ title: 'orgname', key: 'id' }"
+        @select="handleSelect" @check="handleCheck">
       </BasicTree>
       <!--自定义属性title和key " -->
     </div>
@@ -16,7 +16,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, h, onMounted, onUnmounted, ref, unref, toRaw } from 'vue';
+import { defineComponent, h, onMounted, onUnmounted, ref, unref } from 'vue';
 import { BasicTree, TreeActionItem, TreeActionType, TreeItem } from '/@/components/Tree';
 import { cloneDeep } from 'lodash-es';
 
@@ -226,20 +226,19 @@ export default defineComponent({
 <style lang="less" scoped>
 .system_org {
   width: calc(100% - 0px);
-  max-height: 800px;
 
   .system_org_left {
     float: left;
     margin-left: 10px;
     margin-top: 17px;
     width: 35%;
-    height: 100%;
+    height: 96%;
   }
 
   .system_org_right {
     float: right;
     width: 64%;
-    height: 850px;
+    height: 96%;
   }
 }
 </style>

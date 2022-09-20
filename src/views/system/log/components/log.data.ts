@@ -1,4 +1,3 @@
-import { DescItem } from "/@/components/Description";
 import { BasicColumn, FormSchema } from "/@/components/Table";
 
 export const LogColumns: BasicColumn[] = [
@@ -9,6 +8,7 @@ export const LogColumns: BasicColumn[] = [
   },
   {
     title: '应用名称',
+    fixed: 'left',
     dataIndex: 'operationappname',
     width: 120,
   },
@@ -19,6 +19,7 @@ export const LogColumns: BasicColumn[] = [
   },
   {
     title: '操作时间',
+    sorter: true,
     dataIndex: 'operationtime',
     width: 120,
   },
@@ -56,14 +57,14 @@ export const LogSearch: FormSchema[] = [
     field: 'operationappname',
     label: '应用名称',
     component: 'Input',
-    colProps: { span: 8 },
+    colProps: { span: 6 },
   },
   {
     field: 'operationname',
     label: '操作人',
     labelWidth: 120,
     component: 'Input',
-    colProps: { span: 8 },
+    colProps: { span: 6 },
   },
 
 ]

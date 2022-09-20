@@ -11,12 +11,12 @@
 import { computed, defineComponent, onMounted, onUnmounted, ref, unref } from 'vue';
 import { BasicTree } from '/@/components/Tree';
 
-import { orgFormSchema } from './org.data';
+import { RoleFormSchema } from './role.data';
 import { BasicModal, useModalInner } from '/@/components/Modal';
 import { BasicForm, useForm } from '/@/components/Form/index';
 
 export default defineComponent({
-  name: 'orgOperationManager',
+  name: 'roleModel',
   components: { BasicModal, BasicForm, BasicTree },
 
   setup(_, { emit }) {
@@ -26,7 +26,7 @@ export default defineComponent({
 
     const [registerOrgForm, { resetFields, setFieldsValue, validate }] = useForm({
       labelWidth: 100,
-      schemas: orgFormSchema,
+      schemas: RoleFormSchema,
       // 弹出表单是否显示ActionButton
       showActionButtonGroup: false,
     })

@@ -2,48 +2,48 @@ import { FormSchema } from "/@/components/Form";
 
 export const treeData: any[] = [
   {
-    orgname: '组织机构树',
-    id: '100100',
+    title: '组织机构树',
+    key: '100100',
 
     children: [
       {
-        orgname: '研发部',
-        id: '100110',
+        title: '研发部',
+        key: '100110',
 
         children: [
-          { orgname: '研发一部', id: '100111' },
+          { title: '研发一部', key: '100111' },
           {
-            orgname: '研发二部',
-            id: '100112',
+            title: '研发二部',
+            key: '100112',
 
             children: [
               {
-                orgname: '研发二部队伍一',
+                title: '研发二部队伍一',
 
-                id: '1001121',
-                children: [{ orgname: '研发二部小组', id: '10011211' }],
+                key: '1001121',
+                children: [{ title: '研发二部小组', key: '10011211' }],
               },
-              { orgname: '研发二部队伍二', id: '1001122' },
+              { title: '研发二部队伍二', key: '1001122' },
             ],
           },
         ],
       },
       {
-        orgname: '测试部',
-        id: '100210',
+        title: '测试部',
+        key: '100210',
 
         children: [
-          { orgname: '测试一部', id: '100211' },
-          { orgname: '测试二部', id: '100212' },
+          { title: '测试一部', key: '100211' },
+          { title: '测试二部', key: '100212' },
         ],
       },
       {
-        orgname: '市场部',
-        id: '100310',
+        title: '市场部',
+        key: '100310',
 
         children: [
-          { orgname: '市场一部', id: '100311' },
-          { orgname: '市场二部', id: '100312' },
+          { title: '市场一部', key: '100311' },
+          { title: '市场二部', key: '100312' },
         ],
       },
     ]
@@ -53,13 +53,13 @@ export const treeData: any[] = [
 export const orgFormSchema: FormSchema[] = [
   {
     label: '名称',
-    field: 'orgname',
+    field: 'title',
     component: 'Input',
     required: true,
   },
   {
     label: '名编号称',
-    field: 'id',
+    field: 'key',
     component: 'Input',
     required: true,
   }

@@ -1,7 +1,13 @@
 <template>
   <PageWrapper dense contentFullHeight fixedHeight contentClass="flex">
-    <configurationgroupVue></configurationgroupVue>
-    <configuration></configuration>
+    <div style="width: 35%">
+      <configurationgroupVue></configurationgroupVue>
+    </div>
+
+    <div style="width: 65%">
+      <configuration></configuration>
+    </div>
+
   </PageWrapper>
 </template>
 <script lang="ts" setup>

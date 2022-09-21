@@ -9,15 +9,15 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, onMounted, onUnmounted, ref, unref } from 'vue';
+import { BasicTree } from '/@/components/Tree';
 
-
-import { orgFormSchema } from './org.data';
+import { MenuFormSchema } from './menu.data';
 import { BasicModal, useModalInner } from '/@/components/Modal';
 import { BasicForm, useForm } from '/@/components/Form/index';
 
 export default defineComponent({
-  name: 'orgOperationManager',
-  components: { BasicModal, BasicForm },
+  name: 'meunModel',
+  components: { BasicModal, BasicForm, BasicTree },
 
   setup(_, { emit }) {
 
@@ -26,7 +26,7 @@ export default defineComponent({
 
     const [registerOrgForm, { resetFields, setFieldsValue, validate }] = useForm({
       labelWidth: 100,
-      schemas: orgFormSchema,
+      schemas: MenuFormSchema,
       // 弹出表单是否显示ActionButton
       showActionButtonGroup: false,
     })
@@ -38,7 +38,7 @@ export default defineComponent({
       currentNodeKey.value = data?.currentNodeKey;
       if (unref(isUpdate)) {
         setFieldsValue({
-          ...data?.currentNodeKey
+          ...data?.node
         })
       }
     });

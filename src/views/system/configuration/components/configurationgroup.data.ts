@@ -13,10 +13,12 @@ export const ConfigurationGroupColums: BasicColumn[] =
     {
       title: '配置组名称',
       dataIndex: 'configurationgroupname',
+      width: 100
     },
     {
       title: '状态',
       dataIndex: 'configurationgroupenable',
+      width: 80,
       customRender: ({ text }) => {
         if (text === '0') {
           return h(Tag, { color: 'red' }, () => '已停用');;

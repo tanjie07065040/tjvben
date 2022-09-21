@@ -1,96 +1,66 @@
 <template>
-  <div class="role">
-    <div class="roleleft">
-      <BasicTable @register="registerTable" @row-click="appRowClick">
-      </BasicTable>
-    </div>
-    <div class="roleright">
-      <BasicTable @register="registerTableRole">
-        <template #toolbar>
-          <a-button type="primary" @click="addRoleData()">新增角色</a-button>
-        </template>
+  <BasicTable @register="registerTableRole">
+    <template #toolbar>
+      <a-button type="primary" @click="addRoleData()">新增角色</a-button>
+    </template>
 
-        <template #action="{ record }">
-          <TableAction :actions="[
-            {
-              icon: 'clarity:note-edit-line',
-              tooltip: '编辑',
-              onClick: updateRoleData.bind(null, record),
-            },
-            {
-              icon: 'ant-design:delete-outlined',
-              tooltip: '删除',
-              color: 'error',
-              popConfirm: {
-                title: '是否确认删除',
-                confirm: removeRoleData.bind(null, record),
-              },
-            },
-          ]" :dropDownActions="[
-            {
-              label: record.roleenable==='0'? '启用': '停用',
-              popConfirm: {
-                title: '是否启用？',
-                confirm: handleOpen.bind(null, record),
-              },
-            },
-          ]" />
-        </template>
-      </BasicTable>
-    </div>
-    <roleModel @register="registerModal" @success="handlersuccess"></roleModel>
-  </div>
+    <template #action="{ record }">
+      <TableAction :actions="[
+        {
+          icon: 'ion:git-compare-outline',
+          tooltip: '关联用户',
+          onClick: relationUser.bind(null, record),
+        },
+        {
+          icon: 'clarity:note-edit-line',
+          tooltip: '编辑',
+          onClick: updateRoleData.bind(null, record),
+        },
+        {
+          icon: 'ant-design:delete-outlined',
+          tooltip: '删除',
+          color: 'error',
+          popConfirm: {
+            title: '是否确认删除',
+            confirm: removeRoleData.bind(null, record),
+          },
+        },
+      ]" :dropDownActions="[
+        {
+          label: record.roleenable==='0'? '启用': '停用',
+          popConfirm: {
+            title: '是否启用？',
+            confirm: handleOpen.bind(null, record),
+          },
+        },
+      ]" />
+    </template>
+  </BasicTable>
+  <roleModel @register="registerModal" @success="handlersuccess"></roleModel>
+  <roleuserrelationModelVue @register="registerRelationModal" @success="handlerrelationsuccess">
+  </roleuserrelationModelVue>
+
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, onUnmounted } from 'vue';
-import { AppColumns } from './app.data';
 import { RoleColumns, RoleSearch } from './role.data';
-import { AppModel } from '/@/api/system/model/appModel';
 import { RoleModel } from '/@/api/system/model/roleModel';
 import { BasicTable, useTable } from '/@/components/Table';
 import { buildUUID } from '/@/utils/uuid';
 import { TableAction } from '/@/components/Table';
 import roleModel from './roleModel.vue';
 import { useModal } from '/@/components/Modal';
+import roleuserrelationModelVue from './roleuserrelationModel.vue';
 
 export default defineComponent({
   name: 'roleMangaer',
-  components: { BasicTable, TableAction, roleModel },
+  components: { BasicTable, TableAction, roleModel, roleuserrelationModelVue },
   setup() {
-
-    let appDataList: AppModel[] = [];
-
-    const [registerTable, { }] = useTable({
-      title: '应用列表',
-      // 获取数据API信息
-      // api: getUserDataMethod,
-      rowKey: 'id',
-      // 显示列配置
-      columns: AppColumns,
-      dataSource: appDataList,
-      showSummary: true,
-      useSearchForm: false,
-      pagination: true,
-      showIndexColumn: false,
-      showTableSetting: false,
-      bordered: true,
-      fetchSetting: {
-        pageField: 'pageIndex',
-        sizeField: 'pageSize',
-        listField: 'records',
-        totalField: 'totalElements',
-      },
-    })
-
-    // 应用行点击事件 然后获取对应的角色
-    function appRowClick(record: Recordable) {
-      console.log(record);
-      // TODO 获取角色数据
-    }
 
     let roleDataList: RoleModel[] = []
 
-    const [registerModal, { openModal }] = useModal();
+
+    const [registerModal, { openModal: openroleModel }] = useModal();
 
     const [registerTableRole, { setTableData }] = useTable({
       title: '角色列表',
@@ -115,8 +85,8 @@ export default defineComponent({
         console.log('handleSearchInfoFn', searchInfo);
         // TODO 过滤查询数据
         // TODO 设置表的数据集
-        appDataList = [];
-        setTableData(appDataList);
+        roleDataList = [];
+        setTableData(roleDataList);
         return searchInfo;
       },
       bordered: true,
@@ -135,15 +105,24 @@ export default defineComponent({
       },
     })
 
+
     function addRoleData() {
-      openModal(true, {
+      openroleModel(true, {
         isUpdate: false
       })
     }
 
     function updateRoleData(record: Recordable) {
-      openModal(true, {
+      openroleModel(true, {
         isUpdate: false,
+        record
+      })
+    }
+    const [registerRelationModal, { openModal: relationOpneModel }] = useModal();
+
+    function relationUser(record: Recordable) {
+      console.log(record);
+      relationOpneModel(true, {
         record
       })
     }
@@ -160,22 +139,17 @@ export default defineComponent({
       console.log(data);
     }
 
+
+    function handlerrelationsuccess(data) {
+      console.log(data);
+    }
     onMounted(() => {
-      for (let index = 0; index < 40; index++) {
-        appDataList.push({
-          id: buildUUID(),
-          appname: `城市生命线应用-${index}`,
-          appid: 'APP0001',
-          appsupport: "燃气专项",
-          apptype: "城市生命线-燃气",
-          appenable: (index % 2).toString()
-        });
-      }
 
       for (let index = 0; index < 10; index++) {
         roleDataList.push({
           id: buildUUID(),
           rolename: `管理员-${index}`,
+          appname: `应用${index}`,
           rolenumber: 'AAAA000001',
           roleenable: (index % 2).toString(),
         });
@@ -187,7 +161,6 @@ export default defineComponent({
     })
 
     return {
-      registerTable,
       registerTableRole,
       addRoleData,
       updateRoleData,
@@ -195,28 +168,13 @@ export default defineComponent({
       handleOpen,
       handlersuccess,
       registerModal,
-      appRowClick
+      relationUser,
+      registerRelationModal,
+      handlerrelationsuccess,
     }
   }
 })
 </script>
 <style lang="less" scoped>
-.role {
-  width: calc(100% - 0px);
-  height: 96%;
 
-  .roleleft {
-    float: left;
-    margin-left: 10px;
-    margin-top: 17px;
-    width: 15%;
-    height: 96%;
-  }
-
-  .roleright {
-    float: right;
-    width: 84%;
-    height: 96%;
-  }
-}
 </style>

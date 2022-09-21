@@ -3,8 +3,7 @@
     <div class="system_org_left">
       <BasicTree ref="orgTreeRef" title="组织机构" helpMessage="组织机构" :treeData="treeDataList" :checkable="true"
         :loading="treeLoading" :toolbar="true" :search="true" :renderIcon="createIcon" :selectedKeys="selectedKeys"
-        :actionList="OrgActionList" :defaultExpandLevel="1" :fieldNames="{ title: 'orgname', key: 'id' }"
-        @select="handleSelect" @check="handleCheck">
+        :actionList="OrgActionList" @select="handleSelect" @check="handleCheck">
       </BasicTree>
       <!--自定义属性title和key " -->
     </div>
@@ -108,10 +107,10 @@ export default defineComponent({
       },
     ]
     // 组织机构数节点选中事件
-    function handleSelect(keys, info) {
+    function handleSelect(keys) {
       getTree().setCheckedKeys([keys[0]]);
-      currentNode.value = { orgname: info.selectedNodes[0].orgname, id: info.selectedNodes[0].id };
-      emit('select', keys[0]);
+      currentNode.value = getTree().getSelectedNode(keys[0]);
+      // emit('select', keys[0]);
     }
 
     function handlePlusOrg(node: any) {
@@ -126,7 +125,7 @@ export default defineComponent({
       // 当前的node对象中拿不到树的title属性
       openOrgModal(true, {
         isUpdate: true,
-        currentNodeKey: node.id,
+        currentNodeKey: currentNode,
         node
       });
     }
@@ -167,7 +166,7 @@ export default defineComponent({
       getTree().insertNodeByKey({
         parentKey: parentKey,
         node: {
-          orgname: values.orgname,
+          title: values.title,
           id: values.id
         },
         // 往后插入
@@ -179,7 +178,7 @@ export default defineComponent({
 
     function EditOrgNodeMethod(currentKey: string, values: any) {
       getTree().updateNodeByKey(currentKey, {
-        orgname: values.orgname
+        title: values.title
       })
     }
 
@@ -192,6 +191,7 @@ export default defineComponent({
     onMounted(() => {
       OrgTitle.value = '组织机构';
       loadOrgData();
+      getTree().filterByLevel(1);
     })
 
     // 页面释放

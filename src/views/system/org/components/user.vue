@@ -6,6 +6,11 @@
       </template>
       <template #action="{ record }">
         <TableAction :actions="[
+           {
+          icon: 'ion:git-compare-outline',
+          tooltip: '关联角色',
+          onClick: relationRole.bind(null, record),
+        },
           {
             icon: 'clarity:note-edit-line',
             tooltip: '编辑',
@@ -34,6 +39,9 @@
         </template>
       </BasicForm>
     </BasicModal>
+
+    <userrolerelationModelVue @register="registerUserRoleModal" @success="handlerUserRoleSuccess">
+    </userrolerelationModelVue>
   </div>
 </template>
 <script lang="ts">
@@ -42,11 +50,11 @@ import { BasicModal, useModal } from '/@/components/Modal';
 import { BasicForm, useForm } from '/@/components/Form/index';
 import { BasicTree } from '/@/components/Tree';
 import { BasicTable, useTable, TableAction } from '/@/components/Table';
-
+import userrolerelationModelVue from './userrolerelationModel.vue';
 import { UserColumns, UserFormSchema, UserSearch } from './user.data';
 export default defineComponent({
   name: 'orgUser',
-  components: { BasicModal, BasicForm, BasicTree, BasicTable, TableAction },
+  components: { BasicModal, BasicForm, BasicTree, BasicTable, TableAction, userrolerelationModelVue },
   setup() {
 
     const TitleContent = ref('');
@@ -166,6 +174,18 @@ export default defineComponent({
         });
       }
     })
+
+    const [registerUserRoleModal, { openModal: UserRoleModal }] = useModal();
+
+    const handlerUserRoleSuccess = () => {
+
+    }
+
+    const relationRole = (record: Recordable) => {
+      UserRoleModal(true, {
+        record
+      })
+    }
     // 页面释放
     onUnmounted(() => {
     })
@@ -183,6 +203,9 @@ export default defineComponent({
       SexOptions,
       TitleContent,
       userDataList,
+      relationRole,
+      handlerUserRoleSuccess,
+      registerUserRoleModal,
     }
   },
 

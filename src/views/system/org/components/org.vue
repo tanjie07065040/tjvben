@@ -1,9 +1,10 @@
 <template>
   <div class="system_org">
     <div class="system_org_left">
-      <BasicTree ref="orgTreeRef" title="组织机构" helpMessage="组织机构" :treeData="treeDataList" :checkable="true"
+      <BasicTree ref="orgTreeRef" title="组织机构" helpMessage="组织机构" :treeData="treeDataList" :checkable="false"
         :loading="treeLoading" :toolbar="true" :search="true" :renderIcon="createIcon" :selectedKeys="selectedKeys"
-        :actionList="OrgActionList" @select="handleSelect" @check="handleCheck">
+        :actionList="OrgActionList">
+
       </BasicTree>
       <!--自定义属性title和key " -->
     </div>
@@ -59,6 +60,7 @@ export default defineComponent({
 
     const [registerOrgModel, { openModal: openOrgModal }] = useModal();
 
+
     function createIcon({ level }) {
       if (level === 1) {
         return 'ion:git-compare-outline';
@@ -113,15 +115,19 @@ export default defineComponent({
       // emit('select', keys[0]);
     }
 
-    function handlePlusOrg(node: any) {
+    function handlePlusOrg(node: Recordable) {
+      getTree().setCheckedKeys([node.key]);
+      currentNode.value = getTree().getSelectedNode(node.key);
       resetFields();
       openOrgModal(true, {
         isUpdate: false,
-        currentNodeKey: node.id,
+        currentNodeKey: currentNode,
       });
     }
 
-    function handleEditOrg(node: any) {
+    function handleEditOrg(node: Recordable) {
+      getTree().setCheckedKeys([node.key]);
+      currentNode.value = getTree().getSelectedNode(node.key);
       // 当前的node对象中拿不到树的title属性
       openOrgModal(true, {
         isUpdate: true,
@@ -155,9 +161,9 @@ export default defineComponent({
     // 组织机构操作事件方法
     async function orghandleSuccess(data: any) {
       if (!unref(data.isUpdate)) {
-        addOrgNodeMethod(data.parentKey.value, data.values);
+        addOrgNodeMethod(data.parentKey, data.values);
       } else {
-        EditOrgNodeMethod(data.parentKey.value, data.values);
+        EditOrgNodeMethod(data.parentKey, data.values);
       }
       createMessage.success('operation success');
     }

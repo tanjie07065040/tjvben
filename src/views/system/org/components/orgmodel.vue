@@ -55,7 +55,7 @@ export default defineComponent({
       setModalProps({ confirmLoading: true });
 
       closeModal();
-      emit('success', { isUpdate: unref(isUpdate), values: values, parentKey: currentNodeKey });
+      emit('success', { isUpdate: unref(isUpdate), values: values, parentKey: currentNodeKey.value.key });
       setModalProps({ confirmLoading: false });
 
     }

@@ -136,7 +136,7 @@ export default defineComponent({
     })
 
     onUnmounted(() => {
-
+      configurationDataList = [];
     })
 
     return {

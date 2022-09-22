@@ -19,6 +19,7 @@
           {
             icon: 'ant-design:delete-outlined',
             tooltip: '删除',
+            PlaceMent: 'right',
             color: 'error',
             popConfirm: {
               title: '是否确认删除',
@@ -45,13 +46,17 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted, reactive, ref } from 'vue';
+import { defineComponent, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue';
 import { BasicModal, useModal } from '/@/components/Modal';
 import { BasicForm, useForm } from '/@/components/Form/index';
 import { BasicTree } from '/@/components/Tree';
 import { BasicTable, useTable, TableAction } from '/@/components/Table';
 import userrolerelationModelVue from './userrolerelationModel.vue';
 import { UserColumns, UserFormSchema, UserSearch } from './user.data';
+import { rxevent } from '/@/utils/eventbus/eventaggregator.service';
+import { OrgModel } from '/@/api/system/model/orgModel';
+import { UserModel } from '/@/api/system/model/userModel';
+import cloneDeep from 'lodash-es/cloneDeep';
 export default defineComponent({
   name: 'orgUser',
   components: { BasicModal, BasicForm, BasicTree, BasicTable, TableAction, userrolerelationModelVue },
@@ -59,7 +64,7 @@ export default defineComponent({
 
     const TitleContent = ref('');
     const SexOptions: any = ref([]);
-    const userDataList: any = [];
+    let userDataList: UserModel[] = [];
 
     const [registerUserModal, { setModalProps, closeModal: closeUserModal, openModal: openUserModal }] = useModal();
 
@@ -70,7 +75,7 @@ export default defineComponent({
       showActionButtonGroup: false,
     });
     // 用户table初始化
-    const [registerTable, { reload, getRawDataSource, insertTableDataRecord, updateTableDataRecord, deleteTableDataRecord }] = useTable({
+    const [registerTable, { reload, insertTableDataRecord, updateTableDataRecord, deleteTableDataRecord, setTableData }] = useTable({
       title: '账号列表',
       // 获取数据API信息
       // api: getUserDataMethod,
@@ -80,9 +85,19 @@ export default defineComponent({
       dataSource: userDataList,
       showSummary: true,
       useSearchForm: true,
-      pagination: {pageSize: 12},
+      canResize: false,
+      pagination: { pageSize: 12, showQuickJumper: false, showSizeChanger: false },
       showIndexColumn: true,
       showTableSetting: true,
+      // 过滤请求前处理(查询和重置按钮事件)
+      handleSearchInfoFn(searchInfo) {
+        console.log('handleSearchInfoFn', searchInfo);
+        // TODO 过滤查询数据
+        // TODO 设置表的数据集
+        userDataList = [];
+        setTableData(cloneDeep(userDataList));
+        return searchInfo;
+      },
       // 查询条件配置
       formConfig: {
         labelWidth: 80,
@@ -106,11 +121,6 @@ export default defineComponent({
     })
 
     const searchInfo = reactive<Recordable>({});
-
-    function initUserData() {
-      const data = getRawDataSource();
-      console.log(data);
-    }
 
     function addUserData() {
       // 打开模态框
@@ -150,9 +160,9 @@ export default defineComponent({
       reload();
     }
 
+    const number = ref(30)
     // 初始化加载数据
     onMounted(() => {
-
       SexOptions.value = [
         {
           label: '男',
@@ -166,14 +176,29 @@ export default defineComponent({
           label: '其他',
           value: 'other'
         },
-      ]
-      for (let index = 0; index < 40; index++) {
+      ];
+
+      rxevent.subscribe('test', 'userPage', async (data: OrgModel) => {
+        number.value++;
+        userDataList = [];
+        await initUserData(data);
+        setTableData(cloneDeep(userDataList))
+        reload();
+      });
+
+
+    })
+
+    function initUserData(orgdata: OrgModel) {
+      console.log(orgdata);
+      for (let index = 0; index < number.value; index++) {
         userDataList.push({
           name: `${index} John Brown`,
           sex: SexOptions.value[index % SexOptions.value.length].value,
         });
       }
-    })
+
+    }
 
     const [registerUserRoleModal, { openModal: UserRoleModal }] = useModal();
 
@@ -188,6 +213,7 @@ export default defineComponent({
     }
     // 页面释放
     onUnmounted(() => {
+      rxevent.unsubscribe('test', 'userPage');
     })
 
     return {
@@ -196,7 +222,6 @@ export default defineComponent({
       updateUserData,
       removeUserData,
       searchInfo,
-      initUserData,
       registerUserForm,
       registerUserModal,
       handleSubmit,

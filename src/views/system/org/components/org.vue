@@ -11,7 +11,7 @@
     </div>
     <orgModal @register="registerOrgModel" @success="orghandleSuccess"></orgModal>
     <div class="system_org_right">
-      <user></user> 
+      <user></user>
     </div>
 
   </div>
@@ -29,6 +29,7 @@ import { BasicForm, useForm } from '/@/components/Form/index';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { OrgModel } from '/@/api/system/model/orgModel';
+import { rxevent } from '/@/utils/eventbus/eventaggregator.service';
 
 export default defineComponent({
   name: 'orgManager',
@@ -41,7 +42,7 @@ export default defineComponent({
     const orgTreeRef = ref<Nullable<TreeActionType>>(null);
     const treeDataList = ref<OrgModel[]>([]);
     const treeLoading = ref(false);
-    const OrgTitle = ref('');
+    const OrgTitle = ref('组织机构');
     const currentNode = ref();
     const selectedKeys = ref<string[]>([]);
 
@@ -118,6 +119,7 @@ export default defineComponent({
       currentNode.value = getTree().getSelectedNode(keys[0]);
       emit('select', keys[0]);
       // TODO 根据选中的组织机构节点加载对应的用户列表信息
+      rxevent.publish('test', currentNode.value);
     }
 
     function handlePlusOrg(node: Recordable) {
@@ -152,7 +154,7 @@ export default defineComponent({
         if (treeDataList.value.length > 0) {
           getTree().setCheckedKeys(['100100']);
           getTree().setExpandedKeys(['100100']);
-
+          rxevent.publish('test', '100100');
         }
         treeLoading.value = false;
       }, 500);
@@ -204,14 +206,13 @@ export default defineComponent({
 
     // 初始化加载数据
     onMounted(() => {
-      OrgTitle.value = '组织机构';
       loadOrgData();
-
     })
 
     // 页面释放
     onUnmounted(() => {
       treeDataList.value = [];
+      rxevent.unsubscribe('test', 'orgpublish');
     })
 
 

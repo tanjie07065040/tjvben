@@ -1,16 +1,18 @@
 <template>
-  <BasicTable @register="registerTable" ref="tableRef">
-    <template #expandedRowRender="{ record }">
-      <a-row :span="16">
-        <a-col :span="6">
-          请求地址：{{record.operationrequestrouterpage}}
-        </a-col>
-        <a-col :span="10">
-          操作内容：{{record.content}}
-        </a-col>
-      </a-row>
-    </template>
-  </BasicTable>
+  <div class="log">
+    <BasicTable @register="registerTable" ref="tableRef">
+      <template #expandedRowRender="{ record }">
+        <a-row :span="16">
+          <a-col :span="6">
+            请求地址：{{record.operationrequestrouterpage}}
+          </a-col>
+          <a-col :span="10">
+            操作内容：{{record.content}}
+          </a-col>
+        </a-row>
+      </template>
+    </BasicTable>
+  </div>
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, onUnmounted, ref, unref } from 'vue';
@@ -54,7 +56,7 @@ export default defineComponent({
       showSummary: true,
       // 开启查询
       useSearchForm: true,
-      pagination: true,
+      pagination: { pageSize: 13, showQuickJumper: false, showSizeChanger: false },
       expandRowByClick: true,
       showIndexColumn: true,
       showTableSetting: true,
@@ -126,5 +128,17 @@ export default defineComponent({
 });
 </script>
 <style lang="less" scoped>
+.log {
+  height: 100%;
 
+  ::v-deep(.vben-basic-table .ant-table) {
+    height: 710px !important;
+    overflow-x: hidden;
+  }
+
+  ::v-deep(.ant-table-body) {
+    max-height: 614px !important;
+    height: 614px !important;
+  }
+}
 </style>

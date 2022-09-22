@@ -1,35 +1,38 @@
 <template>
-  <BasicTable @register="registerTableConfigurationGroup" @row-click="appRowClick">
-    <template #toolbar>
-      <a-button type="primary" @click="addConfigurationGroupData()">新增配置组</a-button>
-    </template>
-    <template #action="{ record }">
-      <TableAction :actions="[
-        {
-          icon: 'clarity:note-edit-line',
-          tooltip: '编辑',
-          onClick: updateConfigurationGroupData.bind(null, record),
-        },
-        {
-          icon: 'ant-design:delete-outlined',
-          tooltip: '删除',
-          color: 'error',
-          popConfirm: {
-            title: '是否确认删除',
-            confirm: removeConfigurationGroupData.bind(null, record),
+  <div class="configurationgroup">
+    <BasicTable @register="registerTableConfigurationGroup" @row-click="appRowClick">
+      <template #toolbar>
+        <a-button type="primary" @click="addConfigurationGroupData()">新增配置组</a-button>
+      </template>
+      <template #action="{ record }">
+        <TableAction :actions="[
+          {
+            icon: 'clarity:note-edit-line',
+            tooltip: '编辑',
+            ifShow: record.configurationgroupenable==='0'?false:true,
+            onClick: updateConfigurationGroupData.bind(null, record),
           },
-        },
-      ]" :dropDownActions="[
-        {
-          label: record.configurationgroupenable==='0'? '启用': '停用',
-          popConfirm: {
-            title: '是否启用？',
-            confirm: handleOpenGroup.bind(null, record),
+          {
+            icon: 'ant-design:delete-outlined',
+            tooltip: '删除',
+            color: 'error',
+            popConfirm: {
+              title: '是否确认删除',
+              confirm: removeConfigurationGroupData.bind(null, record),
+            },
           },
-        },
-      ]" />
-    </template>
-  </BasicTable>
+        ]" :dropDownActions="[
+          {
+            label: record.configurationgroupenable==='0'? '启用': '停用',
+            popConfirm: {
+              title: '是否启用？',
+              confirm: handleOpenGroup.bind(null, record),
+            },
+          },
+        ]" />
+      </template>
+    </BasicTable>
+  </div>
   <configurationGroupModelVue @register="registerGroupModal" @success="handlergroupsuccess">
   </configurationGroupModelVue>
 
@@ -63,7 +66,7 @@ export default defineComponent({
       dataSource: configurationGroupDataList,
       showSummary: true,
       useSearchForm: true,
-      pagination: true,
+      pagination: { pageSize: 12, showQuickJumper: false, showSizeChanger: false },
       showIndexColumn: false,
       showTableSetting: false,
       bordered: true,
@@ -103,7 +106,7 @@ export default defineComponent({
 
     function updateConfigurationGroupData(record: Recordable) {
       openModal(true, {
-        isUpdate: false,
+        isUpdate: true,
         record
       })
     }
@@ -155,22 +158,19 @@ export default defineComponent({
 })
 </script>
 <style lang="less" scoped>
-.configuration {
+.configurationgroup {
   width: calc(100% - 0px);
-  height: 96%;
+  height: 100%;
 
-  .configurationleft {
-    float: left;
-    margin-left: 10px;
-    margin-top: 17px;
-    width: 25%;
-    height: 96%;
+  ::v-deep(.vben-basic-table .ant-table) {
+    height: 710px !important;
+    overflow-x: hidden;
   }
 
-  .configurationright {
-    float: right;
-    width: 74%;
-    height: 96%;
+  ::v-deep(.ant-table-body) {
+    max-height: 614px !important;
+    height: 614px !important;
   }
+
 }
 </style>

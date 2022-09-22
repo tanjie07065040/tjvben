@@ -34,10 +34,10 @@ export default defineComponent({
       resetFields();
       setModalProps({ confirmLoading: false });
       isUpdate.value = !!data?.isUpdate;
-      currentNodeKey.value = data?.currentNodeKey;
+      currentNodeKey.value = data?.record;
       if (unref(isUpdate)) {
         setFieldsValue({
-          ...data?.node
+          ...data?.record
         })
       }
     });

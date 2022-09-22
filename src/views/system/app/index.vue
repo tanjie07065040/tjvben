@@ -1,6 +1,8 @@
 <template>
   <PageWrapper dense contentFullHeight fixedHeight contentClass="flex">
+    <div style="width: 100%; height: 100%">
     <app></app>
+    </div>
   </PageWrapper>
 </template>
 <script lang="ts" setup>

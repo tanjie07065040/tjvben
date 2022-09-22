@@ -1,5 +1,5 @@
 <template>
-  <div class="configurationright">
+  <div class="configuration">
     <BasicTable @register="registerTableConfiguration">
       <template #toolbar>
         <a-button type="primary" @click="addConfigurationData()">新增配置</a-button>
@@ -10,6 +10,7 @@
           {
             icon: 'clarity:note-edit-line',
             tooltip: '编辑',
+            ifShow: record.configurationenable==='0'?false:true,
             onClick: updateConfigurationData.bind(null, record),
           },
           {
@@ -64,7 +65,7 @@ export default defineComponent({
       dataSource: configurationDataList,
       showSummary: true,
       useSearchForm: true,
-      pagination: true,
+      pagination: { pageSize: 12, showQuickJumper: false, showSizeChanger: false },
       showIndexColumn: true,
       showTableSetting: true,
       // 查询条件配置
@@ -105,7 +106,7 @@ export default defineComponent({
 
     function updateConfigurationData(record: Recordable) {
       openModal(true, {
-        isUpdate: false,
+        isUpdate: true,
         record
       })
     }
@@ -123,7 +124,7 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      for (let index = 0; index < 10; index++) {
+      for (let index = 0; index < 50; index++) {
         configurationDataList.push({
           id: buildUUID(),
           configurationname: `CONFIGURATION--${index}`,
@@ -151,5 +152,17 @@ export default defineComponent({
 })
 </script>
 <style lang="less" scoped>
+.configuration {
+  height: 100%;
 
+  ::v-deep(.vben-basic-table .ant-table) {
+    height: 710px !important;
+    overflow-x: hidden;
+  }
+
+  ::v-deep(.ant-table-body) {
+    max-height: 614px !important;
+    height: 614px !important;
+  }
+}
 </style>

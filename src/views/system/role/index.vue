@@ -1,9 +1,9 @@
 <template>
   <PageWrapper :dense="true" :fixed-height="true" :content-full-height="true" contentClass="flex">
-    <div style="width: 20%">
+    <div style="width: 20%; height: 100%">
       <roleapp></roleapp>
     </div>
-    <div style="width: 80%">
+    <div style="width: 80%; height: 100%">
       <role></role>
     </div>
   </PageWrapper>

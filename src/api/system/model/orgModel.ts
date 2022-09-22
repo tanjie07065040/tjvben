@@ -1,4 +1,6 @@
-export interface OrgModel {
+import { TreeItem } from "/@/components/Tree";
+
+export interface OrgModel extends TreeItem {
   id?: string;
   orgpid?: string;
   orgid?: string;

@@ -1,6 +1,7 @@
+import { OrgModel } from "/@/api/system/model/orgModel";
 import { FormSchema } from "/@/components/Form";
 
-export const treeData: any[] = [
+export const treeData: OrgModel[] = [
   {
     title: '组织机构树',
     key: '100100',

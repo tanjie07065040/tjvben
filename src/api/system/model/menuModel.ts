@@ -1,4 +1,4 @@
-export interface MenuModel{
+export interface MenuModel {
   id?: string;
   appid?: string;
   appname?: string;
@@ -13,4 +13,5 @@ export interface MenuModel{
   operationname?: string;
   operationtime?: string;
   description?: string;
+  children?: MenuModel[],
 }

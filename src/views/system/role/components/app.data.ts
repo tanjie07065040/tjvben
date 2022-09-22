@@ -1,4 +1,4 @@
-import { BasicColumn, FormSchema } from "/@/components/Table";
+import { BasicColumn } from "/@/components/Table";
 
 // 表列设计
 export const AppColumns: BasicColumn[] =
@@ -11,6 +11,6 @@ export const AppColumns: BasicColumn[] =
     {
       title: '应用名称',
       dataIndex: 'appname',
-      width: 80,
+      width: 60,
     },
   ]

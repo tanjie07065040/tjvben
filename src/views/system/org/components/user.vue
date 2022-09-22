@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="user">
     <BasicTable @register="registerTable" :searchInfo="searchInfo">
       <template #toolbar>
         <a-button type="primary" @click="addUserData()">新增用户</a-button>
@@ -80,7 +80,7 @@ export default defineComponent({
       dataSource: userDataList,
       showSummary: true,
       useSearchForm: true,
-      pagination: true,
+      pagination: {pageSize: 12},
       showIndexColumn: true,
       showTableSetting: true,
       // 查询条件配置
@@ -212,5 +212,11 @@ export default defineComponent({
 });
 </script>
 <style lang="less" scoped>
+.user {
+  height: 100%;
 
+  ::v-deep(.vben-basic-table .ant-table) {
+    height: 713px !important;
+  }
+}
 </style>

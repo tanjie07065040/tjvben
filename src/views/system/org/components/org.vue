@@ -1,23 +1,24 @@
 <template>
   <div class="system_org">
     <div class="system_org_left">
-      <BasicTree ref="orgTreeRef" title="组织机构" helpMessage="组织机构" :treeData="treeDataList" :checkable="false"
+      <BasicTree ref="orgTreeRef" title="组织机构" helpMessage="组织机构" :treeData="treeDataList" :checkable="true"
         :loading="treeLoading" :toolbar="true" :search="true" :renderIcon="createIcon" :selectedKeys="selectedKeys"
-        :actionList="OrgActionList">
+        :actionList="OrgActionList" @select="handleSelect">
 
       </BasicTree>
       <!--自定义属性title和key " -->
+      <!-- :fieldNames="{ title: 'orgname', key: 'id' }" -->
     </div>
     <orgModal @register="registerOrgModel" @success="orghandleSuccess"></orgModal>
     <div class="system_org_right">
-      <user></user>
+      <user></user> 
     </div>
 
   </div>
 </template>
 <script lang="ts">
 import { defineComponent, h, onMounted, onUnmounted, ref, unref } from 'vue';
-import { BasicTree, TreeActionItem, TreeActionType, TreeItem } from '/@/components/Tree';
+import { BasicTree, TreeActionItem, TreeActionType } from '/@/components/Tree';
 import { cloneDeep } from 'lodash-es';
 
 import { orgFormSchema, treeData } from './org.data';
@@ -27,6 +28,7 @@ import { BasicModal, useModal } from '/@/components/Modal';
 import { BasicForm, useForm } from '/@/components/Form/index';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons-vue';
 import { useMessage } from '/@/hooks/web/useMessage';
+import { OrgModel } from '/@/api/system/model/orgModel';
 
 export default defineComponent({
   name: 'orgManager',
@@ -37,7 +39,7 @@ export default defineComponent({
     const { createMessage } = useMessage();
 
     const orgTreeRef = ref<Nullable<TreeActionType>>(null);
-    const treeDataList = ref<TreeItem[]>([]);
+    const treeDataList = ref<OrgModel[]>([]);
     const treeLoading = ref(false);
     const OrgTitle = ref('');
     const currentNode = ref();
@@ -51,7 +53,7 @@ export default defineComponent({
       return tree;
     }
 
-    const [registerOrgForm, { resetFields, }] = useForm({
+    const [registerOrgForm, { resetFields }] = useForm({
       labelWidth: 100,
       schemas: orgFormSchema,
       // 弹出表单是否显示ActionButton
@@ -79,6 +81,7 @@ export default defineComponent({
         render: (node) => {
           return h(PlusOutlined, {
             class: 'ml-2',
+
             onClick: () => {
               handlePlusOrg(node);
             },
@@ -102,6 +105,7 @@ export default defineComponent({
           return h(DeleteOutlined, {
             class: 'ml-2',
             onClick: () => {
+              // TODO 这里对是否有子节点以及当前节点下是否有用户列表在进行是否删除
               DeleteOrgNodeMethod(node.id);
             },
           });
@@ -112,11 +116,12 @@ export default defineComponent({
     function handleSelect(keys) {
       getTree().setCheckedKeys([keys[0]]);
       currentNode.value = getTree().getSelectedNode(keys[0]);
-      // emit('select', keys[0]);
+      emit('select', keys[0]);
+      // TODO 根据选中的组织机构节点加载对应的用户列表信息
     }
 
     function handlePlusOrg(node: Recordable) {
-      getTree().setCheckedKeys([node.key]);
+      // getTree().setCheckedKeys([node.key]);
       currentNode.value = getTree().getSelectedNode(node.key);
       resetFields();
       openOrgModal(true, {
@@ -126,7 +131,7 @@ export default defineComponent({
     }
 
     function handleEditOrg(node: Recordable) {
-      getTree().setCheckedKeys([node.key]);
+      //   getTree().setCheckedKeys([node.key]);
       currentNode.value = getTree().getSelectedNode(node.key);
       // 当前的node对象中拿不到树的title属性
       openOrgModal(true, {
@@ -144,8 +149,14 @@ export default defineComponent({
       setTimeout(() => {
         // 设置数据源
         treeDataList.value = cloneDeep(treeData);
+        if (treeDataList.value.length > 0) {
+          getTree().setCheckedKeys(['100100']);
+          getTree().setExpandedKeys(['100100']);
+
+        }
         treeLoading.value = false;
-      }, 2000);
+      }, 500);
+
     }
 
     // 组织机构CheckBox选择
@@ -154,8 +165,6 @@ export default defineComponent({
         return;
       }
       getTree().setSelectedKeys([checkedKeys[0]]);
-      // 选择组织机构后操作完后重新加载用户数据
-      // loadOrgData();
     }
 
     // 组织机构操作事件方法
@@ -197,7 +206,7 @@ export default defineComponent({
     onMounted(() => {
       OrgTitle.value = '组织机构';
       loadOrgData();
-      getTree().filterByLevel(1);
+
     })
 
     // 页面释放

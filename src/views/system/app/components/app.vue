@@ -42,12 +42,10 @@
       </template>
     </BasicTable>
   </div>
-  <div>
-    <BasicModal @register="registerAppModal" :title="TitleContent" v-bind="$attrs" @ok="handleSubmit">
-      <BasicForm @register="registerApForm">
-      </BasicForm>
-    </BasicModal>
-  </div>
+  <BasicModal @register="registerAppModal" :title="TitleContent" v-bind="$attrs" @ok="handleSubmit">
+    <BasicForm @register="registerApForm">
+    </BasicForm>
+  </BasicModal>
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, onUnmounted, reactive, ref } from 'vue';
@@ -89,7 +87,7 @@ export default defineComponent({
       dataSource: appDataList,
       showSummary: true,
       useSearchForm: true,
-      pagination: true,
+      pagination: { pageSize: 11, showQuickJumper: false, showSizeChanger: false },
       showIndexColumn: true,
       showTableSetting: true,
       // 查询条件配置
@@ -209,15 +207,16 @@ export default defineComponent({
 </script>
 <style lang="less" scoped>
 .app {
-  height: 80%;
-  width: 100%;
+  height: 100%;
 
-  ::v-deep(.vben-basic-table-form-container) {
-    padding: 0 !important;
+  ::v-deep(.vben-basic-table .ant-table) {
+    height: 710px !important;
+    overflow-x: hidden;
   }
 
-  ::v-deep(.vben-basic-table) {
-    height: 90% !important;
+  ::v-deep(.ant-table-body) {
+    max-height: 614px !important;
+    height: 614px !important;
   }
 }
 </style>

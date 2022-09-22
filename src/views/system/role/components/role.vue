@@ -1,41 +1,43 @@
 <template>
-  <BasicTable @register="registerTableRole">
-    <template #toolbar>
-      <a-button type="primary" @click="addRoleData()">新增角色</a-button>
-    </template>
+  <div class="role">
+    <BasicTable @register="registerTableRole">
+      <template #toolbar>
+        <a-button type="primary" @click="addRoleData()">新增角色</a-button>
+      </template>
 
-    <template #action="{ record }">
-      <TableAction :actions="[
-        {
-          icon: 'ion:git-compare-outline',
-          tooltip: '关联用户',
-          onClick: relationUser.bind(null, record),
-        },
-        {
-          icon: 'clarity:note-edit-line',
-          tooltip: '编辑',
-          onClick: updateRoleData.bind(null, record),
-        },
-        {
-          icon: 'ant-design:delete-outlined',
-          tooltip: '删除',
-          color: 'error',
-          popConfirm: {
-            title: '是否确认删除',
-            confirm: removeRoleData.bind(null, record),
+      <template #action="{ record }">
+        <TableAction :actions="[
+          {
+            icon: 'ion:git-compare-outline',
+            tooltip: '关联用户',
+            onClick: relationUser.bind(null, record),
           },
-        },
-      ]" :dropDownActions="[
-        {
-          label: record.roleenable==='0'? '启用': '停用',
-          popConfirm: {
-            title: '是否启用？',
-            confirm: handleOpen.bind(null, record),
+          {
+            icon: 'clarity:note-edit-line',
+            tooltip: '编辑',
+            onClick: updateRoleData.bind(null, record),
           },
-        },
-      ]" />
-    </template>
-  </BasicTable>
+          {
+            icon: 'ant-design:delete-outlined',
+            tooltip: '删除',
+            color: 'error',
+            popConfirm: {
+              title: '是否确认删除',
+              confirm: removeRoleData.bind(null, record),
+            },
+          },
+        ]" :dropDownActions="[
+          {
+            label: record.roleenable==='0'? '启用': '停用',
+            popConfirm: {
+              title: '是否启用？',
+              confirm: handleOpen.bind(null, record),
+            },
+          },
+        ]" />
+      </template>
+    </BasicTable>
+  </div>
   <roleModel @register="registerModal" @success="handlersuccess"></roleModel>
   <roleuserrelationModelVue @register="registerRelationModal" @success="handlerrelationsuccess">
   </roleuserrelationModelVue>
@@ -69,10 +71,11 @@ export default defineComponent({
       rowKey: 'id',
       // 显示列配置
       columns: RoleColumns,
+      canResize: false,
       dataSource: roleDataList,
       showSummary: true,
       useSearchForm: true,
-      pagination: true,
+      pagination: { pageSize: 12 },
       showIndexColumn: true,
       showTableSetting: true,
       // 查询条件配置
@@ -114,7 +117,7 @@ export default defineComponent({
 
     function updateRoleData(record: Recordable) {
       openroleModel(true, {
-        isUpdate: false,
+        isUpdate: true,
         record
       })
     }
@@ -145,7 +148,7 @@ export default defineComponent({
     }
     onMounted(() => {
 
-      for (let index = 0; index < 10; index++) {
+      for (let index = 0; index < 30; index++) {
         roleDataList.push({
           id: buildUUID(),
           rolename: `管理员-${index}`,
@@ -176,5 +179,12 @@ export default defineComponent({
 })
 </script>
 <style lang="less" scoped>
+.role {
+  margin-top: 16px;
+  height: 100%;
 
+  ::v-deep(.vben-basic-table .ant-table) {
+    height: 700px !important;
+  }
+}
 </style>

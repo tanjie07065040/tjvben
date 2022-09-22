@@ -1,26 +1,27 @@
 <template>
-  <BasicTable @register="registerTableMenu">
-    <template #toolbar>
-      <a-button type="primary" @click="addMenuData()">新增菜单</a-button>
-    </template>
+  <div class="menu">
+    <BasicTable @register="registerTableMenu">
+      <template #toolbar>
+        <a-button type="primary" @click="addMenuData()">新增菜单</a-button>
+      </template>
 
-    <template #action="{ record }">
-      <TableAction :actions="[
-        {
-          icon: 'clarity:note-edit-line',
-          tooltip: '编辑',
-          onClick: updateMenuData.bind(null, record),
-        },
-        {
-          icon: 'ant-design:delete-outlined',
-          tooltip: '删除',
-          color: 'error',
-          popConfirm: {
-            title: '是否确认删除',
-            confirm: removeMenuData.bind(null, record),
+      <template #action="{ record }">
+        <TableAction :actions="[
+          {
+            icon: 'clarity:note-edit-line',
+            tooltip: '编辑',
+            onClick: updateMenuData.bind(null, record),
           },
-        },
-      ]" :dropDownActions="[
+          {
+            icon: 'ant-design:delete-outlined',
+            tooltip: '删除',
+            color: 'error',
+            popConfirm: {
+              title: '是否确认删除',
+              confirm: removeMenuData.bind(null, record),
+            },
+          },
+        ]" :dropDownActions="[
         {
           label: record.roleenable==='0'? '启用': '停用',
           popConfirm: {
@@ -29,8 +30,9 @@
           },
         },
       ]" />
-    </template>
-  </BasicTable>
+      </template>
+    </BasicTable>
+  </div>
   <menuModelVue @register="registerModal" @success="handlersuccess"></menuModelVue>
 </template>
 <script lang="ts">
@@ -57,12 +59,14 @@ export default defineComponent({
       // 获取数据API信息
       // api: getUserDataMethod,
       rowKey: 'id',
+      isTreeTable: true,
       // 显示列配置
       columns: MenuColumns,
       dataSource: menuDataList,
       showSummary: true,
       useSearchForm: true,
-      pagination: true,
+      pagination: { pageSize: 12 },
+      canResize: false,
       showIndexColumn: true,
       showTableSetting: true,
       // 查询条件配置
@@ -103,7 +107,7 @@ export default defineComponent({
 
     function updateMenuData(record: Recordable) {
       openModal(true, {
-        isUpdate: false,
+        isUpdate: true,
         record
       })
     }
@@ -128,7 +132,21 @@ export default defineComponent({
           menuname: `菜单-${index}`,
           menuorder: `${index}`,
           menuenable: (index % 2).toString(),
-          menuurl: '/views/system/****'
+          menuurl: '/views/system/****',
+          children: [
+            {
+              menuname: `子菜单-${index}`,
+              menuorder: `${index}`,
+              menuenable: (index % 2).toString(),
+              menuurl: '/views/submenu/system/****',
+            },
+            {
+              menuname: `子菜单-${index + 1}`,
+              menuorder: `${index + 1}`,
+              menuenable: (index % 2).toString(),
+              menuurl: '/views/submenu/system/****',
+            }
+          ]
         });
       }
     })
@@ -150,5 +168,12 @@ export default defineComponent({
 })
 </script>
 <style lang="less" scoped>
+.menu {
+  margin-top: 16px;
+  height: 100%;
 
+  ::v-deep(.vben-basic-table .ant-table) {
+    height: 700px !important;
+  }
+}
 </style>

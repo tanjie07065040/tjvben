@@ -1,7 +1,8 @@
 <template>
-  <BasicTable @register="registerTable" @row-click="appRowClick">
-  </BasicTable>
-
+  <div class="roleapp">
+    <BasicTable @register="registerTable" @row-click="appRowClick" :height=800>
+    </BasicTable>
+  </div>
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, onUnmounted } from 'vue';
@@ -26,19 +27,20 @@ export default defineComponent({
       rowKey: 'id',
       // 显示列配置
       columns: AppColumns,
+      canResize: false,
       dataSource: appDataList,
       showSummary: true,
       useSearchForm: false,
-      pagination: true,
+      pagination: { pageSize: 15, showQuickJumper: false, showSizeChanger: false, position: ['bottomCenter'] },
       showIndexColumn: false,
       showTableSetting: false,
       bordered: true,
-      fetchSetting: {
-        pageField: 'pageIndex',
-        sizeField: 'pageSize',
-        listField: 'records',
-        totalField: 'totalElements',
-      },
+      // fetchSetting: {
+      //   pageField: 'pageIndex',
+      //   sizeField: 'pageSize',
+      //   listField: 'records',
+      //   totalField: 'totalElements',
+      // },
     })
 
     // 应用行点击事件 然后获取对应的角色
@@ -47,7 +49,7 @@ export default defineComponent({
       // TODO 获取角色数据
     }
 
-    
+
     onMounted(() => {
       for (let index = 0; index < 40; index++) {
         appDataList.push({
@@ -74,5 +76,12 @@ export default defineComponent({
 })
 </script>
 <style lang="less" scoped>
+.roleapp {
+  margin-top: 16px;
+  height: 100%;
 
+  ::v-deep(.vben-basic-table .ant-table) {
+    height: 800px !important;
+  }
+}
 </style>

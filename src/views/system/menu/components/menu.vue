@@ -22,21 +22,21 @@
             },
           },
         ]" :dropDownActions="[
-        {
-          label: record.roleenable==='0'? '启用': '停用',
-          popConfirm: {
-            title: '是否启用？',
-            confirm: handleOpen.bind(null, record),
+          {
+            label: record.roleenable==='0'? '启用': '停用',
+            popConfirm: {
+              title: '是否启用？',
+              confirm: handleOpen.bind(null, record),
+            },
           },
-        },
-      ]" />
+        ]" />
       </template>
     </BasicTable>
   </div>
   <menuModelVue @register="registerModal" @success="handlersuccess"></menuModelVue>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted } from 'vue';
+import { defineComponent, onBeforeMount, onMounted, onUnmounted, ref } from 'vue';
 import { MenuColumns, MenuSearch } from './menu.data';
 import { BasicTable, useTable } from '/@/components/Table';
 import { buildUUID } from '/@/utils/uuid';
@@ -44,6 +44,11 @@ import { TableAction } from '/@/components/Table';
 import menuModelVue from './menuModel.vue';
 import { useModal } from '/@/components/Modal';
 import { MenuModel } from '/@/api/system/model/menuModel';
+import { rxevent } from '/@/utils/eventbus/eventaggregator.service';
+import { EventKeys } from '/@/utils/eventbus/eventName';
+import { AppModel } from '/@/api/system/model/appModel';
+import cloneDeep from 'lodash-es/cloneDeep';
+import { replaceCssColors } from 'vite-plugin-theme/es/client';
 
 export default defineComponent({
   name: 'roleMangaer',
@@ -54,7 +59,7 @@ export default defineComponent({
 
     const [registerModal, { openModal }] = useModal();
 
-    const [registerTableMenu, { setTableData }] = useTable({
+    const [registerTableMenu, { setTableData, reload }] = useTable({
       title: '菜单列表',
       // 获取数据API信息
       // api: getUserDataMethod,
@@ -80,7 +85,7 @@ export default defineComponent({
         // TODO 过滤查询数据
         // TODO 设置表的数据集
         menuDataList = [];
-        setTableData(menuDataList);
+        setTableData(cloneDeep(menuDataList));
         return searchInfo;
       },
       bordered: true,
@@ -124,31 +129,43 @@ export default defineComponent({
       console.log(data);
     }
 
+    const number = ref(30);
+    onBeforeMount(() => {
+      rxevent.subscribe(EventKeys.APPCHOOSE, 'rolePage', (record: AppModel) => {
+        console.log(record);
+        number.value++;
+        menuDataList = [];
+        for (let index = 0; index < number.value; index++) {
+          menuDataList.push({
+            id: buildUUID(),
+            menuname: `菜单-${index}`,
+            menuorder: `${index}`,
+            menuenable: (index % 2).toString(),
+            menuurl: '/views/system/****',
+            children: [
+              {
+                menuname: `子菜单-${index}`,
+                menuorder: `${index}`,
+                menuenable: (index % 2).toString(),
+                menuurl: '/views/submenu/system/****',
+              },
+              {
+                menuname: `子菜单-${index + 1}`,
+                menuorder: `${index + 1}`,
+                menuenable: (index % 2).toString(),
+                menuurl: '/views/submenu/system/****',
+              }
+            ]
+          });
+        }
+        setTableData(cloneDeep(menuDataList));
+        reload();
+      })
+    })
+
     onMounted(() => {
 
-      for (let index = 0; index < 10; index++) {
-        menuDataList.push({
-          id: buildUUID(),
-          menuname: `菜单-${index}`,
-          menuorder: `${index}`,
-          menuenable: (index % 2).toString(),
-          menuurl: '/views/system/****',
-          children: [
-            {
-              menuname: `子菜单-${index}`,
-              menuorder: `${index}`,
-              menuenable: (index % 2).toString(),
-              menuurl: '/views/submenu/system/****',
-            },
-            {
-              menuname: `子菜单-${index + 1}`,
-              menuorder: `${index + 1}`,
-              menuenable: (index % 2).toString(),
-              menuurl: '/views/submenu/system/****',
-            }
-          ]
-        });
-      }
+
     })
 
     onUnmounted(() => {

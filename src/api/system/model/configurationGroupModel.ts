@@ -1,5 +1,5 @@
 export interface ConfigurationGroupModel {
-  id?: string;
+  id: string;
   configurationgroupname?: string;
   configurationgroupid?: string;
   configurationgroupenable?: string;

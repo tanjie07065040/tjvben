@@ -30,6 +30,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons-vu
 import { useMessage } from '/@/hooks/web/useMessage';
 import { OrgModel } from '/@/api/system/model/orgModel';
 import { rxevent } from '/@/utils/eventbus/eventaggregator.service';
+import { EventKeys } from '/@/utils/eventbus/eventName';
 
 export default defineComponent({
   name: 'orgManager',
@@ -119,11 +120,10 @@ export default defineComponent({
       currentNode.value = getTree().getSelectedNode(keys[0]);
       emit('select', keys[0]);
       // TODO 根据选中的组织机构节点加载对应的用户列表信息
-      rxevent.publish('test', currentNode.value);
+      rxevent.publish(EventKeys.ORGCHOOSE, currentNode.value);
     }
 
     function handlePlusOrg(node: Recordable) {
-      // getTree().setCheckedKeys([node.key]);
       currentNode.value = getTree().getSelectedNode(node.key);
       resetFields();
       openOrgModal(true, {
@@ -133,7 +133,6 @@ export default defineComponent({
     }
 
     function handleEditOrg(node: Recordable) {
-      //   getTree().setCheckedKeys([node.key]);
       currentNode.value = getTree().getSelectedNode(node.key);
       // 当前的node对象中拿不到树的title属性
       openOrgModal(true, {
@@ -212,7 +211,6 @@ export default defineComponent({
     // 页面释放
     onUnmounted(() => {
       treeDataList.value = [];
-      rxevent.unsubscribe('test', 'orgpublish');
     })
 
 

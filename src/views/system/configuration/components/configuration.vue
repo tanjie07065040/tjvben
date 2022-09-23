@@ -37,13 +37,17 @@
   <configurationModelVue @register="registerModal" @success="handlersuccess"></configurationModelVue>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted } from 'vue';
+import { defineComponent, onBeforeMount, onUnmounted, ref } from 'vue';
 import { ConfigurationColums, ConfigurationSearch } from './configuration.data';
 import { BasicTable, useTable } from '/@/components/Table';
 import { buildUUID } from '/@/utils/uuid';
 import { TableAction } from '/@/components/Table';
 import { useModal } from '/@/components/Modal';
 import configurationModelVue from './configurationModel.vue';
+import cloneDeep from 'lodash-es/cloneDeep';
+import { EventKeys } from '/@/utils/eventbus/eventName';
+import { rxevent } from '/@/utils/eventbus/eventaggregator.service';
+import { ConfigurationGroupModel } from '/@/api/system/model/configurationGroupModel';
 import { ConfigurationModel } from '/@/api/system/model/configurationModel';
 
 export default defineComponent({
@@ -55,7 +59,7 @@ export default defineComponent({
 
     const [registerModal, { openModal }] = useModal();
 
-    const [registerTableConfiguration, { setTableData }] = useTable({
+    const [registerTableConfiguration, { setTableData, reload }] = useTable({
       title: '配置列表',
       // 获取数据API信息
       // api: getUserDataMethod,
@@ -79,7 +83,8 @@ export default defineComponent({
         // TODO 过滤查询数据
         // TODO 设置表的数据集
         configurationDataList = [];
-        setTableData(configurationDataList);
+        setTableData(cloneDeep(configurationDataList));
+        reload();
         return searchInfo;
       },
       bordered: true,
@@ -123,20 +128,31 @@ export default defineComponent({
       console.log(data);
     }
 
-    onMounted(() => {
-      for (let index = 0; index < 50; index++) {
-        configurationDataList.push({
-          id: buildUUID(),
-          configurationname: `CONFIGURATION--${index}`,
-          configurationvalue: '00000000',
-          configurationdefaultvalue: '',
-          configurationenable: (index % 2).toString(),
-        });
-      }
+
+    const number = ref(30);
+
+    onBeforeMount(() => {
+      rxevent.subscribe(EventKeys.CONFIGURATIONCHOOSE, 'configurationPage', (record: ConfigurationGroupModel) => {
+        console.log(record);
+        configurationDataList = [];
+        number.value++;
+        for (let index = 0; index < number.value; index++) {
+          configurationDataList.push({
+            id: buildUUID(),
+            configurationname: `CONFIGURATION--${index}`,
+            configurationvalue: '00000000',
+            configurationdefaultvalue: '',
+            configurationenable: (index % 2).toString(),
+          });
+        }
+        setTableData(cloneDeep(configurationDataList));
+        reload();
+      })
+
     })
 
     onUnmounted(() => {
-      configurationDataList = [];
+      rxevent.unsubscribe(EventKeys.CONFIGURATIONCHOOSE, 'configurationGroupPage');
     })
 
     return {

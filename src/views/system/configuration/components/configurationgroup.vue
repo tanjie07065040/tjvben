@@ -1,6 +1,6 @@
 <template>
   <div class="configurationgroup">
-    <BasicTable @register="registerTableConfigurationGroup" @row-click="appRowClick">
+    <BasicTable @register="registerTableConfigurationGroup" @row-click="appRowClick" ref="basicTableConfiguration">
       <template #toolbar>
         <a-button type="primary" @click="addConfigurationGroupData()">新增配置组</a-button>
       </template>
@@ -39,24 +39,37 @@
 
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted } from 'vue';
+import { defineComponent, onMounted, onUnmounted, ref, unref } from 'vue';
 import { ConfigurationGroupColums, ConfigurationGroupSearch } from './configurationgroup.data';
-import { BasicTable, useTable } from '/@/components/Table';
+import { BasicTable, TableActionType, useTable } from '/@/components/Table';
 import { buildUUID } from '/@/utils/uuid';
 import { TableAction } from '/@/components/Table';
 import { useModal } from '/@/components/Modal';
 import configurationGroupModelVue from './configurationGroupModel.vue';
 import { ConfigurationGroupModel } from '/@/api/system/model/configurationGroupModel';
+import cloneDeep from 'lodash-es/cloneDeep';
+import { rxevent } from '/@/utils/eventbus/eventaggregator.service';
+import { EventKeys } from '/@/utils/eventbus/eventName';
 
 export default defineComponent({
   name: 'configurationGroupMangaer',
   components: { BasicTable, TableAction, configurationGroupModelVue },
   setup() {
 
+    const basicTableConfiguration = ref<Nullable<TableActionType>>(null);
+
+    function getTableAction() {
+      const tableAction = unref(basicTableConfiguration);
+      if (!tableAction) {
+        throw new Error('tableAction is null');
+      }
+      return tableAction;
+    }
+
     let configurationGroupDataList: ConfigurationGroupModel[] = [];
     const [registerGroupModal, { openModal }] = useModal();
 
-    const [registerTableConfigurationGroup, { setTableData }] = useTable({
+    const [registerTableConfigurationGroup, { setTableData, reload }] = useTable({
       title: '配置组列表',
       // 获取数据API信息
       // api: getUserDataMethod,
@@ -69,6 +82,7 @@ export default defineComponent({
       pagination: { pageSize: 12, showQuickJumper: false, showSizeChanger: false },
       showIndexColumn: false,
       showTableSetting: false,
+      canResize: false,
       bordered: true,
       formConfig: {
         labelWidth: 80,
@@ -80,7 +94,8 @@ export default defineComponent({
         // TODO 过滤查询数据
         // TODO 设置表的数据集
         configurationGroupDataList = [];
-        setTableData(configurationGroupDataList);
+        setTableData(cloneDeep(configurationGroupDataList));
+        reload();
         return searchInfo;
       },
       fetchSetting: {
@@ -128,16 +143,26 @@ export default defineComponent({
     function appRowClick(record: Recordable) {
       console.log(record);
       // TODO 获取角色数据
+      rxevent.publish(EventKeys.CONFIGURATIONCHOOSE, record);
     }
 
+
     onMounted(() => {
-      for (let index = 0; index < 40; index++) {
+      for (let index = 0; index < 30; index++) {
         configurationGroupDataList.push({
           id: buildUUID(),
           configurationgroupname: `配置分组-${index}`,
           configurationgroupenable: (index % 2).toString()
         });
       }
+      if (configurationGroupDataList.length > 0) {
+        getTableAction().clearSelectedRowKeys();
+        getTableAction().setSelectedRowKeys([configurationGroupDataList[0].id]);
+        const currentData = getTableAction().getSelectRows()[0] as ConfigurationGroupModel;
+        console.log(currentData);
+        rxevent.publish(EventKeys.CONFIGURATIONCHOOSE, currentData);
+      }
+
     })
 
     onUnmounted(() => {
@@ -152,7 +177,8 @@ export default defineComponent({
       registerGroupModal,
       handlergroupsuccess,
       handleOpenGroup,
-      appRowClick
+      appRowClick,
+      basicTableConfiguration
     }
   }
 })

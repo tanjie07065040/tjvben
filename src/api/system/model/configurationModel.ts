@@ -1,5 +1,5 @@
 export interface ConfigurationModel{
-  id?: string;
+  id: string;
   configurationgrouid?: string;
   configurationname?: string;
   configurationdefaultvalue?: string;

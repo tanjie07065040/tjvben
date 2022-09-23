@@ -44,7 +44,7 @@
 
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted } from 'vue';
+import { defineComponent, onBeforeMount, onMounted, onUnmounted, ref } from 'vue';
 import { RoleColumns, RoleSearch } from './role.data';
 import { RoleModel } from '/@/api/system/model/roleModel';
 import { BasicTable, useTable } from '/@/components/Table';
@@ -53,6 +53,10 @@ import { TableAction } from '/@/components/Table';
 import roleModel from './roleModel.vue';
 import { useModal } from '/@/components/Modal';
 import roleuserrelationModelVue from './roleuserrelationModel.vue';
+import { EventKeys } from '/@/utils/eventbus/eventName';
+import { rxevent } from '/@/utils/eventbus/eventaggregator.service';
+import { AppModel } from '/@/api/system/model/appModel';
+import cloneDeep from 'lodash-es/cloneDeep';
 
 export default defineComponent({
   name: 'roleMangaer',
@@ -64,7 +68,7 @@ export default defineComponent({
 
     const [registerModal, { openModal: openroleModel }] = useModal();
 
-    const [registerTableRole, { setTableData }] = useTable({
+    const [registerTableRole, { setTableData, reload }] = useTable({
       title: '角色列表',
       // 获取数据API信息
       // api: getUserDataMethod,
@@ -146,21 +150,33 @@ export default defineComponent({
     function handlerrelationsuccess(data) {
       console.log(data);
     }
+
+    const number = ref(30);
+    onBeforeMount(() => {
+      rxevent.subscribe(EventKeys.APPCHOOSE, 'rolePage', (record: AppModel) => {
+        console.log(record);
+        number.value++;
+        roleDataList = [];
+        for (let index = 0; index < number.value; index++) {
+          roleDataList.push({
+            id: buildUUID(),
+            rolename: `管理员-${index}`,
+            appname: `应用${index}`,
+            rolenumber: 'AAAA000001',
+            roleenable: (index % 2).toString(),
+          });
+        }
+        setTableData(cloneDeep(roleDataList));
+        reload();
+      })
+    })
+
     onMounted(() => {
 
-      for (let index = 0; index < 30; index++) {
-        roleDataList.push({
-          id: buildUUID(),
-          rolename: `管理员-${index}`,
-          appname: `应用${index}`,
-          rolenumber: 'AAAA000001',
-          roleenable: (index % 2).toString(),
-        });
-      }
     })
 
     onUnmounted(() => {
-
+      rxevent.unsubscribe(EventKeys.APPCHOOSE, 'rolePage');
     })
 
     return {

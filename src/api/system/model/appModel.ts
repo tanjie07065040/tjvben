@@ -1,5 +1,5 @@
 export interface AppModel {
-  id?: string;
+  id: string;
   appid?: string;
   appname?: string;
   appsupport?: string;

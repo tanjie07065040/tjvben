@@ -57,6 +57,7 @@ import { rxevent } from '/@/utils/eventbus/eventaggregator.service';
 import { OrgModel } from '/@/api/system/model/orgModel';
 import { UserModel } from '/@/api/system/model/userModel';
 import cloneDeep from 'lodash-es/cloneDeep';
+import { EventKeys } from '/@/utils/eventbus/eventName';
 export default defineComponent({
   name: 'orgUser',
   components: { BasicModal, BasicForm, BasicTree, BasicTable, TableAction, userrolerelationModelVue },
@@ -178,7 +179,7 @@ export default defineComponent({
         },
       ];
 
-      rxevent.subscribe('test', 'userPage', async (data: OrgModel) => {
+      rxevent.subscribe(EventKeys.ORGCHOOSE, 'userPage', async (data: OrgModel) => {
         number.value++;
         userDataList = [];
         await initUserData(data);
@@ -213,7 +214,7 @@ export default defineComponent({
     }
     // 页面释放
     onUnmounted(() => {
-      rxevent.unsubscribe('test', 'userPage');
+      rxevent.unsubscribe(EventKeys.ORGCHOOSE, 'userPage');
     })
 
     return {

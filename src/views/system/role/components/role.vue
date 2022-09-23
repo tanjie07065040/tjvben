@@ -79,7 +79,7 @@ export default defineComponent({
       dataSource: roleDataList,
       showSummary: true,
       useSearchForm: true,
-      pagination: { pageSize: 12 },
+      pagination: { pageSize: 11, showQuickJumper: false, showSizeChanger: false },
       showIndexColumn: true,
       showTableSetting: true,
       // 查询条件配置

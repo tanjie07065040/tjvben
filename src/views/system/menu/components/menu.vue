@@ -70,7 +70,7 @@ export default defineComponent({
       dataSource: menuDataList,
       showSummary: true,
       useSearchForm: true,
-      pagination: { pageSize: 12 },
+      pagination: { pageSize: 11, showQuickJumper: false, showSizeChanger: false },
       canResize: false,
       showIndexColumn: true,
       showTableSetting: true,

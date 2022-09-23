@@ -19,7 +19,6 @@
           {
             icon: 'ant-design:delete-outlined',
             tooltip: '删除',
-            PlaceMent: 'right',
             color: 'error',
             popConfirm: {
               title: '是否确认删除',
@@ -46,7 +45,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue';
+import { defineComponent, onBeforeMount, onUnmounted, reactive, ref } from 'vue';
 import { BasicModal, useModal } from '/@/components/Modal';
 import { BasicForm, useForm } from '/@/components/Form/index';
 import { BasicTree } from '/@/components/Tree';
@@ -163,7 +162,7 @@ export default defineComponent({
 
     const number = ref(30)
     // 初始化加载数据
-    onMounted(() => {
+    onBeforeMount(() => {
       SexOptions.value = [
         {
           label: '男',

@@ -153,7 +153,7 @@ export default defineComponent({
         if (treeDataList.value.length > 0) {
           getTree().setCheckedKeys(['100100']);
           getTree().setExpandedKeys(['100100']);
-          rxevent.publish('test', '100100');
+          rxevent.publish(EventKeys.ORGCHOOSE, '100100');
         }
         treeLoading.value = false;
       }, 500);

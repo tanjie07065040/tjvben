@@ -2,9 +2,8 @@
   <div class="system_org">
     <div class="system_org_left">
       <BasicTree ref="orgTreeRef" title="组织机构" helpMessage="组织机构" :treeData="treeDataList" :checkable="true"
-        :loading="treeLoading" :toolbar="true" :search="true" :renderIcon="createIcon" :selectedKeys="selectedKeys"
-        :actionList="OrgActionList" @select="handleSelect">
-
+        :loading="treeLoading" :toolbar="true" :search="true" :selectedKeys="selectedKeys" :actionList="OrgActionList"
+        @select="handleSelect">
       </BasicTree>
       <!--自定义属性title和key " -->
       <!-- :fieldNames="{ title: 'orgname', key: 'id' }" -->
@@ -31,6 +30,7 @@ import { useMessage } from '/@/hooks/web/useMessage';
 import { OrgModel } from '/@/api/system/model/orgModel';
 import { rxevent } from '/@/utils/eventbus/eventaggregator.service';
 import { EventKeys } from '/@/utils/eventbus/eventName';
+
 
 export default defineComponent({
   name: 'orgManager',

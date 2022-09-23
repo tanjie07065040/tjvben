@@ -2,6 +2,7 @@
   <div class="user">
     <BasicTable @register="registerTable" :searchInfo="searchInfo">
       <template #toolbar>
+        <!-- <ApartmentOutlined :style="{width: 30,height: 30}" /> -->
         <a-button type="primary" @click="addUserData()">新增用户</a-button>
       </template>
       <template #action="{ record }">
@@ -30,50 +31,35 @@
     </BasicTable>
   </div>
   <div>
-    <BasicModal @register="registerUserModal" :title="TitleContent" v-bind="$attrs" @ok="handleSubmit">
-      <BasicForm @register="registerUserForm">
-        <template #user="{ model, field }">
-          <div>
-            <a-select :options=SexOptions v-model:value="model[field]" allowClear />
-          </div>
-        </template>
-      </BasicForm>
-    </BasicModal>
-
+    <userModelVue @register="registerOpenUserModal" @success="handlerUserSuccess"></userModelVue>
     <userrolerelationModelVue @register="registerUserRoleModal" @success="handlerUserRoleSuccess">
     </userrolerelationModelVue>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, onBeforeMount, onUnmounted, reactive, ref } from 'vue';
+import { defineComponent, onBeforeMount, onMounted, onUnmounted, reactive, ref } from 'vue';
 import { BasicModal, useModal } from '/@/components/Modal';
-import { BasicForm, useForm } from '/@/components/Form/index';
+import { BasicForm } from '/@/components/Form/index';
 import { BasicTree } from '/@/components/Tree';
 import { BasicTable, useTable, TableAction } from '/@/components/Table';
 import userrolerelationModelVue from './userrolerelationModel.vue';
-import { UserColumns, UserFormSchema, UserSearch } from './user.data';
+import { UserColumns, UserSearch } from './user.data';
 import { rxevent } from '/@/utils/eventbus/eventaggregator.service';
 import { OrgModel } from '/@/api/system/model/orgModel';
 import { UserModel } from '/@/api/system/model/userModel';
 import cloneDeep from 'lodash-es/cloneDeep';
 import { EventKeys } from '/@/utils/eventbus/eventName';
+import userModelVue from './userModel.vue';
+import { ApartmentOutlined } from '@ant-design/icons-vue';
+import { buildUUID } from '/@/utils/uuid';
 export default defineComponent({
   name: 'orgUser',
-  components: { BasicModal, BasicForm, BasicTree, BasicTable, TableAction, userrolerelationModelVue },
+  components: { ApartmentOutlined, BasicModal, BasicForm, BasicTree, BasicTable, TableAction, userrolerelationModelVue, userModelVue },
   setup() {
 
-    const TitleContent = ref('');
     const SexOptions: any = ref([]);
     let userDataList: UserModel[] = [];
 
-    const [registerUserModal, { setModalProps, closeModal: closeUserModal, openModal: openUserModal }] = useModal();
-
-
-    const [registerUserForm, { resetFields, validate, setFieldsValue }] = useForm({
-      labelWidth: 100,
-      schemas: UserFormSchema,
-      showActionButtonGroup: false,
-    });
     // 用户table初始化
     const [registerTable, { reload, insertTableDataRecord, updateTableDataRecord, deleteTableDataRecord, setTableData }] = useTable({
       title: '账号列表',
@@ -124,19 +110,16 @@ export default defineComponent({
 
     function addUserData() {
       // 打开模态框
-      openUserModal();
-      // 属性重置
-      // resetFields();
-      TitleContent.value = '新增'
-
+      openUserModal(true, {
+        isUpdate: false,
+      });
     }
 
     function updateUserData(record) {
-      openUserModal();
-      resetFields();
-      setFieldsValue({ ...record });
-      TitleContent.value = '编辑'
-      console.log(record);
+      openUserModal(true, {
+        isUpdate: true,
+        record
+      });
     }
 
     function removeUserData(record) {
@@ -144,25 +127,28 @@ export default defineComponent({
       deleteTableDataRecord(record.name)
     }
 
-    async function handleSubmit() {
-
-      const values = await validate();
+    function handlerUserSuccess(values: any) {
       console.log(values);
-      if (TitleContent.value === '新增') {
+      if (!values.isUpdate) {
         insertTableDataRecord(values);
-      } else if (TitleContent.value === '编辑') {
-        updateTableDataRecord(values.name, values);
+      } else {
+        updateTableDataRecord(values.id, { name: values.name, sex: values.sex });
       }
-      // 关闭模态框
-      closeUserModal();
-
-      setModalProps({ confirmLoading: false });
       reload();
     }
 
     const number = ref(30)
     // 初始化加载数据
     onBeforeMount(() => {
+      rxevent.subscribe(EventKeys.ORGCHOOSE, 'userPage', async (data: OrgModel) => {
+        number.value++;
+        userDataList = [];
+        await initUserData(data);
+        setTableData(cloneDeep(userDataList))
+        reload();
+      });
+    })
+    onMounted(() => {
       SexOptions.value = [
         {
           label: '男',
@@ -177,28 +163,20 @@ export default defineComponent({
           value: 'other'
         },
       ];
-
-      rxevent.subscribe(EventKeys.ORGCHOOSE, 'userPage', async (data: OrgModel) => {
-        number.value++;
-        userDataList = [];
-        await initUserData(data);
-        setTableData(cloneDeep(userDataList))
-        reload();
-      });
-
-
     })
 
     function initUserData(orgdata: OrgModel) {
       console.log(orgdata);
       for (let index = 0; index < number.value; index++) {
         userDataList.push({
+          id: buildUUID(),
           name: `${index} John Brown`,
           sex: SexOptions.value[index % SexOptions.value.length].value,
         });
       }
-
     }
+
+    const [registerOpenUserModal, { openModal: openUserModal }] = useModal();
 
     const [registerUserRoleModal, { openModal: UserRoleModal }] = useModal();
 
@@ -222,11 +200,9 @@ export default defineComponent({
       updateUserData,
       removeUserData,
       searchInfo,
-      registerUserForm,
-      registerUserModal,
-      handleSubmit,
+      registerOpenUserModal,
+      handlerUserSuccess,
       SexOptions,
-      TitleContent,
       userDataList,
       relationRole,
       handlerUserRoleSuccess,

@@ -1,5 +1,5 @@
 export interface UserModel {
-  id?: string;
+  id: string;
   orgname?: string;
   orgregion?: string;
   name?: string;

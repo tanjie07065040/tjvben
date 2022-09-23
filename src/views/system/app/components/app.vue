@@ -42,42 +42,33 @@
       </template>
     </BasicTable>
   </div>
-  <BasicModal @register="registerAppModal" :title="TitleContent" v-bind="$attrs" @ok="handleSubmit">
-    <BasicForm @register="registerApForm">
-    </BasicForm>
-  </BasicModal>
+  <appModelVue @register="registerAppModal" @success="handlersuccess"></appModelVue>
 </template>
 <script lang="ts">
 import { defineComponent, onMounted, onUnmounted, reactive, ref } from 'vue';
 import { BasicModal, useModal } from '/@/components/Modal';
-import { BasicForm, useForm } from '/@/components/Form/index';
+import { BasicForm } from '/@/components/Form/index';
 import { BasicTree } from '/@/components/Tree';
 import { BasicTable, useTable, TableAction } from '/@/components/Table';
 
-import { AppSearch, UserFormSchema, AppColumns } from './app.data';
+import { AppSearch, AppColumns } from './app.data';
 import { AppModel } from '/@/api/system/model/appModel';
 import { buildUUID } from '/@/utils/uuid';
 import { useMessage } from '/@/hooks/web/useMessage';
+import appModelVue from '/@/views/system/app/components/appModel.vue'
+
 export default defineComponent({
   name: 'appManager',
-  components: { BasicModal, BasicForm, BasicTree, BasicTable, TableAction },
+  components: { BasicModal, BasicForm, BasicTree, BasicTable, TableAction, appModelVue },
   setup() {
     // 消息提示组件
     const { createMessage } = useMessage();
 
     const TitleContent = ref('');
     let appDataList: AppModel[] = [];
-
-    const [registerAppModal, { setModalProps, closeModal: closeUserModal, openModal: openUserModal }] = useModal();
-
-
-    const [registerApForm, { resetFields, validate, setFieldsValue }] = useForm({
-      labelWidth: 100,
-      schemas: UserFormSchema,
-      showActionButtonGroup: false,
-    });
+    const [registerAppModal, { openModal }] = useModal();
     // 用户table初始化
-    const [registerTable, { reload, setTableData, getRawDataSource, insertTableDataRecord, updateTableDataRecord, deleteTableDataRecord }] = useTable({
+    const [registerTable, { reload, setTableData, getRawDataSource, deleteTableDataRecord }] = useTable({
       title: '应用列表',
       // 获取数据API信息
       // api: getUserDataMethod,
@@ -129,40 +120,26 @@ export default defineComponent({
     }
 
     function addAppData() {
-      // 打开模态框
-      openUserModal();
-      // 属性重置
-      // resetFields();
-      TitleContent.value = '新增'
-
+      openModal(true, {
+        isUpdate: false,
+      }, true);
     }
 
     function updateAppData(record) {
-      openUserModal();
-      resetFields();
-      setFieldsValue({ ...record });
-      TitleContent.value = '编辑'
-      console.log(record);
+      openModal(true, {
+        isUpdate: true,
+        record
+      }, true);
     }
 
     function removeAppData(record) {
       console.log(record);
       deleteTableDataRecord(record.name)
+      reload();
     }
 
-    async function handleSubmit() {
-
-      const values = await validate();
+    function handlersuccess(values: any) {
       console.log(values);
-      if (TitleContent.value === '新增') {
-        insertTableDataRecord(values);
-      } else if (TitleContent.value === '编辑') {
-        updateTableDataRecord(values.name, values);
-      }
-      // 关闭模态框
-      closeUserModal();
-
-      setModalProps({ confirmLoading: false });
       reload();
     }
 
@@ -194,9 +171,8 @@ export default defineComponent({
       removeAppData,
       searchInfo,
       initUserData,
-      registerApForm,
       registerAppModal,
-      handleSubmit,
+      handlersuccess,
       TitleContent,
       appDataList,
       handleOpen,

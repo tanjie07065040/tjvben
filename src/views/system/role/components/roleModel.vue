@@ -50,14 +50,12 @@ export default defineComponent({
 
     // 组织机构操作事件方法
     async function orghandleSubmit() {
-      const values = await validate();
-      console.log(values);
       setModalProps({ confirmLoading: true });
+      const values = await validate();
 
       closeModal();
       emit('success', { isUpdate: unref(isUpdate), values: values, parentKey: currentNodeKey });
       setModalProps({ confirmLoading: false });
-
     }
 
 

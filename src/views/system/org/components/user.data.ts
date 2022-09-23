@@ -32,6 +32,10 @@ export const UserFormSchema: FormSchema[] = [
   {
     field: 'name',
     label: '姓名',
+    labelWidth: 120,
+    colProps: {
+      span: 20,
+    },
     component: 'Input',
     required: true,
     componentProps: () => {
@@ -43,6 +47,10 @@ export const UserFormSchema: FormSchema[] = [
   {
     field: 'sex',
     label: '性别',
+    labelWidth: 120,
+    colProps: {
+      span: 20,
+    },
     component: 'Select',
     required: true,
     slot: 'user',

@@ -10,7 +10,7 @@ const log: AppRouteModule = {
   redirect: '/system/log',
   meta: {
     hideChildrenInMenu: false,
-    icon: 'ion:bar-chart-outline',
+    icon: 'ion:podium',
     title: t('system.menu.logmanager'),
     orderNo: 4,
   },
@@ -21,7 +21,7 @@ const log: AppRouteModule = {
       component: () => import('/@/views/system/log/index.vue'),
       meta: {
         title: t('system.menu.log'),
-        icon: 'ion:bar-chart-outline',
+        icon: 'ion:podium',
         hideMenu: false,
       },
     },

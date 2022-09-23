@@ -66,7 +66,7 @@ export const AppSearch: FormSchema[] = [
 ]
 
 // 表单设计
-export const UserFormSchema: FormSchema[] = [
+export const AppFormSchema: FormSchema[] = [
   {
     field: 'appname',
     label: '应用名称',

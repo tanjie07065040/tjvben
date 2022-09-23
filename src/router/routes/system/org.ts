@@ -11,7 +11,7 @@ const org: AppRouteModule = {
   meta: {
     orderNo: 1,
     hideChildrenInMenu: false,
-    icon: 'ion:grid-outline',
+    icon: 'ion:people-sharp',
     title: t('system.menu.orgmanager'),
   },
   children: [
@@ -21,7 +21,7 @@ const org: AppRouteModule = {
       component: () => import('/@/views/system/org/index.vue'),
       meta: {
         title: t('system.menu.org'),
-        icon: 'ion:grid-outline',
+        icon: 'ion:people-sharp',
         hideMenu: false,
       },
     },

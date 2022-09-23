@@ -10,7 +10,7 @@ const configuration: AppRouteModule = {
   redirect: '/system/configuration',
   meta: {
     hideChildrenInMenu: false,
-    icon: 'ion:settings-outline',
+    icon: 'ion:md-build',
     title: t('system.menu.configurationmanager'),
     orderNo: 3,
   },
@@ -21,7 +21,7 @@ const configuration: AppRouteModule = {
       component: () => import('/@/views/system/configuration/index.vue'),
       meta: {
         title: t('system.menu.configuration'),
-        icon: 'ion:settings-outline',
+        icon: 'ion:md-build',
         hideMenu: false,
       },
     },

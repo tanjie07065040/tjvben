@@ -107,7 +107,7 @@ export default defineComponent({
     function addConfigurationData() {
       openModal(true, {
         isUpdate: false
-      })
+      }), false
     }
 
     function updateConfigurationData(record: Recordable) {

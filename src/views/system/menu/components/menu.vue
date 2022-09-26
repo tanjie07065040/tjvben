@@ -96,7 +96,7 @@ export default defineComponent({
         totalField: 'totalElements',
       },
       actionColumn: {
-        width: 200,
+        width: 100,
         title: '操作',
         dataIndex: 'action',
         // 操作列开启
@@ -131,7 +131,7 @@ export default defineComponent({
 
     const number = ref(30);
     onBeforeMount(() => {
-      rxevent.subscribe(EventKeys.APPCHOOSE, 'rolePage', (record: AppModel) => {
+      rxevent.subscribe(EventKeys.APPCHOOSE, 'menuPage', (record: AppModel) => {
         console.log(record);
         number.value++;
         menuDataList = [];
@@ -169,7 +169,7 @@ export default defineComponent({
     })
 
     onUnmounted(() => {
-      menuDataList = [];
+      rxevent.unsubscribe(EventKeys.APPCHOOSE, 'menuPage');
     })
 
     return {

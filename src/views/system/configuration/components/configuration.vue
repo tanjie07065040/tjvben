@@ -96,7 +96,7 @@ export default defineComponent({
         totalField: 'totalElements',
       },
       actionColumn: {
-        width: 200,
+        width: 150,
         title: '操作',
         dataIndex: 'action',
         // 操作列开启
@@ -153,7 +153,7 @@ export default defineComponent({
     })
 
     onUnmounted(() => {
-      rxevent.unsubscribe(EventKeys.CONFIGURATIONCHOOSE, 'configurationGroupPage');
+      rxevent.unsubscribe(EventKeys.CONFIGURATIONCHOOSE, 'configurationPage');
     })
 
     return {

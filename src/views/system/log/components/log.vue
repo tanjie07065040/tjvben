@@ -1,5 +1,6 @@
 <template>
   <div class="log">
+
     <BasicTable @register="registerTable" ref="tableRef">
       <template #expandedRowRender="{ record }">
         <a-row :span="16">
@@ -11,7 +12,17 @@
           </a-col>
         </a-row>
       </template>
+      <template #action="{ record }">
+        <TableAction :actions="[
+          {
+            icon: 'ion:md-reorder',
+            tooltip: '详情',
+            onClick: toDetail.bind(null, record),
+          }
+        ]" />
+      </template>
     </BasicTable>
+
   </div>
 </template>
 <script lang="ts">
@@ -23,10 +34,13 @@ import { LogColumns, LogSearch } from './log.data';
 import { formatToDateTime } from '/@/utils/dateUtil';
 import { buildUUID } from '/@/utils/uuid';
 import { LogModel } from '/@/api/system/model/logModel';
+import { CollapseContainer } from '/@/components/Container';
+import { useGo } from '/@/hooks/web/usePage';
+import { TableAction } from '/@/components/Table';
 
 export default defineComponent({
   name: 'logManager',
-  components: { BasicTable },
+  components: { BasicTable, CollapseContainer, TableAction },
   setup() {
     let logDataList: LogModel[] = [];
 
@@ -52,6 +66,7 @@ export default defineComponent({
       rowKey: 'id',
       // 显示列配置
       columns: LogColumns,
+      canResize: false,
       dataSource: logDataList,
       showSummary: true,
       // 开启查询
@@ -94,8 +109,20 @@ export default defineComponent({
         listField: 'records',
         totalField: 'totalElements',
       },
+      actionColumn: {
+        width: 60,
+        title: '操作',
+        dataIndex: 'action',
+        // 操作列开启
+        slots: { customRender: 'action' },
+      },
     })
 
+    const go = useGo();
+    function toDetail(record: Recordable) {
+      console.log(record);
+      go(`/log/log/detail/${record.id}`);
+    }
 
     // 初始化加载数据
     onMounted(() => {
@@ -121,7 +148,8 @@ export default defineComponent({
     return {
       registerTable,
       logDataList,
-      changeLoading
+      changeLoading,
+      toDetail
     }
   },
 

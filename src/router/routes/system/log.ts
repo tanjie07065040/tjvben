@@ -22,8 +22,23 @@ const log: AppRouteModule = {
       meta: {
         title: t('system.menu.log'),
         icon: 'ion:podium',
-        hideMenu: false,
+        //hideMenu: false,
+        hideChildrenInMenu: true,
       },
+      children: [
+        {
+          path: 'detail/:id',
+          name: 'LogDetail',
+          component: () => import('/@/views/system/log/components/LogDetail.vue'),
+          meta: {
+            currentActiveMenu: '/log/log',
+            title: t('routes.demo.feat.tabDetail'),
+            hideMenu: true,
+            dynamicLevel: 3,
+            realPath: '/log/log/detail',
+          },
+        }
+      ]
     },
   ],
 };

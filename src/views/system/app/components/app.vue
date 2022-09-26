@@ -104,7 +104,7 @@ export default defineComponent({
         totalField: 'totalElements',
       },
       actionColumn: {
-        width: 200,
+        width: 60,
         title: '操作',
         dataIndex: 'action',
         // 操作列开启

@@ -70,7 +70,7 @@ export default defineComponent({
     let userDataList: UserModel[] = [];
 
     // 用户table初始化
-    const [registerTable, { reload, insertTableDataRecord, updateTableDataRecord, deleteTableDataRecord, setTableData }] = useTable({
+    const [registerTable, { setLoading, reload, insertTableDataRecord, updateTableDataRecord, deleteTableDataRecord, setTableData }] = useTable({
       title: '账号列表',
       // 获取数据API信息
       // api: getUserDataMethod,
@@ -152,9 +152,11 @@ export default defineComponent({
       rxevent.subscribe(EventKeys.ORGCHOOSE, 'userPage', async (data: OrgModel) => {
         number.value++;
         userDataList = [];
+        setLoading(true);
         await initUserData(data);
         setTableData(cloneDeep(userDataList))
         reload();
+        setLoading(false);
       });
     })
     onMounted(() => {

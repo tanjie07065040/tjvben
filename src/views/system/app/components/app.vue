@@ -33,6 +33,7 @@
         ]" :dropDownActions="[
           {
             label: record.appenable==='0'? '启用': '停用',
+            ifShow:record.appenable==='0'? true: false,
             popConfirm: {
               title: '是否启用？',
               confirm: handleOpen.bind(null, record),

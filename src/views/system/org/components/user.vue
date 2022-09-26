@@ -26,12 +26,21 @@
               confirm: removeUserData.bind(null, record),
             },
           },
-        ]" />
+        ]" :dropDownActions="[
+        {
+          label: record.userenable==='0'? '启用': '停用',
+          ifShow:record.userenable==='0'? true: false,
+          popConfirm: {
+            title: '是否启用？',
+            confirm: handleOpen.bind(null, record),
+          },
+        }]" />
       </template>
     </BasicTable>
   </div>
   <div>
-    <userModelVue @register="registerOpenUserModal" @success="handlerUserSuccess"></userModelVue>
+    <userModelVue @register=" registerOpenUserModal" @success="handlerUserSuccess">
+    </userModelVue>
     <userrolerelationModelVue @register="registerUserRoleModal" @success="handlerUserRoleSuccess">
     </userrolerelationModelVue>
   </div>
@@ -172,6 +181,7 @@ export default defineComponent({
           id: buildUUID(),
           name: `${index} John Brown`,
           sex: SexOptions.value[index % SexOptions.value.length].value,
+          userenable: (index % 2).toString()
         });
       }
     }
@@ -182,6 +192,10 @@ export default defineComponent({
 
     const handlerUserRoleSuccess = () => {
 
+    }
+
+    function handleOpen(record: Recordable) {
+      console.log(record);
     }
 
     const relationRole = (record: Recordable) => {
@@ -207,6 +221,7 @@ export default defineComponent({
       relationRole,
       handlerUserRoleSuccess,
       registerUserRoleModal,
+      handleOpen,
     }
   },
 

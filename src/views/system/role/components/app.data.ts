@@ -12,5 +12,6 @@ export const AppColumns: BasicColumn[] =
       title: '应用名称',
       dataIndex: 'appname',
       width: 60,
+      align: 'left'
     },
   ]

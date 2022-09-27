@@ -40,6 +40,7 @@ export default defineComponent({
       // 显示列配置
       columns: AppColumns,
       canResize: false,
+      striped: true,
       dataSource: appDataList,
       showSummary: true,
       useSearchForm: false,
@@ -85,7 +86,7 @@ export default defineComponent({
 
     })
 
-    
+
 
     onUnmounted(() => {
 

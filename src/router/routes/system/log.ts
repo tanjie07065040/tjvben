@@ -2,6 +2,7 @@ import type { AppRouteModule } from '/@/router/types';
 
 import { LAYOUT } from '/@/router/constant';
 import { t } from '/@/hooks/web/useI18n';
+import { RoleEnum } from '/@/enums/roleEnum';
 
 const log: AppRouteModule = {
   path: '/log',
@@ -13,6 +14,7 @@ const log: AppRouteModule = {
     icon: 'ion:podium',
     title: t('system.menu.logmanager'),
     orderNo: 4,
+    roles: [RoleEnum.TEST]
   },
   children: [
     {
@@ -24,6 +26,7 @@ const log: AppRouteModule = {
         icon: 'ion:podium',
         //hideMenu: false,
         hideChildrenInMenu: true,
+        roles: [RoleEnum.TEST]
       },
       children: [
         {

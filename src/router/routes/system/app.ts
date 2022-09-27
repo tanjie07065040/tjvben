@@ -14,7 +14,7 @@ const app: AppRouteModule = {
     icon: 'ion:ios-magnet',
     title: t('system.menu.appmanager'),
     orderNo: 2,
-    roles: [RoleEnum.SUPER]
+    roles: [RoleEnum.SUPER, RoleEnum.TEST]
   },
   children: [
     {
@@ -25,7 +25,7 @@ const app: AppRouteModule = {
         title: t('system.menu.app'),
         icon: 'ion:ios-magnet',
         hideMenu: false,
-        roles: [RoleEnum.SUPER]
+        roles: [RoleEnum.SUPER, RoleEnum.TEST]
       },
     },
     {
@@ -36,7 +36,7 @@ const app: AppRouteModule = {
         title: t('system.menu.role'),
         icon: 'ion:ios-magnet',
         hideMenu: false,
-        roles: [RoleEnum.SUPER]
+        roles: [RoleEnum.SUPER, RoleEnum.TEST]
       }
     },
     {
@@ -47,7 +47,7 @@ const app: AppRouteModule = {
         title: t('system.menu.menu'),
         icon: 'ion:ios-magnet',
         hideMenu: false,
-        roles: [RoleEnum.SUPER]
+        roles: [RoleEnum.SUPER, RoleEnum.TEST]
       },
     },
   ],

@@ -2,6 +2,7 @@ import type { AppRouteModule } from '/@/router/types';
 
 import { LAYOUT } from '/@/router/constant';
 import { t } from '/@/hooks/web/useI18n';
+import { RoleEnum } from '/@/enums/roleEnum';
 
 const org: AppRouteModule = {
   path: '/org',
@@ -13,6 +14,7 @@ const org: AppRouteModule = {
     hideChildrenInMenu: false,
     icon: 'ion:people-sharp',
     title: t('system.menu.orgmanager'),
+    roles: [RoleEnum.SUPER, RoleEnum.TEST]
   },
   children: [
     {
@@ -23,6 +25,7 @@ const org: AppRouteModule = {
         title: t('system.menu.org'),
         icon: 'ion:people-sharp',
         hideMenu: false,
+        roles: [RoleEnum.SUPER, RoleEnum.TEST]
       },
     },
   ],

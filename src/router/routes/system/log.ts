@@ -14,7 +14,7 @@ const log: AppRouteModule = {
     icon: 'ion:podium',
     title: t('system.menu.logmanager'),
     orderNo: 4,
-    roles: [RoleEnum.TEST]
+    roles: [RoleEnum.SUPER]
   },
   children: [
     {
@@ -26,7 +26,7 @@ const log: AppRouteModule = {
         icon: 'ion:podium',
         //hideMenu: false,
         hideChildrenInMenu: true,
-        roles: [RoleEnum.TEST]
+        roles: [RoleEnum.SUPER]
       },
       children: [
         {
